@@ -33,6 +33,25 @@ export interface ExpectativaMercado {
   baseCalculo: number;
 }
 
+export interface IfDataParams {
+  codInst?: string;
+  anoBase?: number;
+  top?: number;
+  skip?: number;
+  orderBy?: string;
+  filter?: string;
+}
+
+export interface IfDataItem {
+  CodInst: string;
+  NomeInst: string;
+  AnoBase: number;
+  CodConta: string;
+  NomeConta: string;
+  Valor: string;
+  [key: string]: string | number;
+}
+
 interface SgsRawEntry {
   data: string;
   valor: string | null;
@@ -102,6 +121,41 @@ export class BcbSource extends Source {
 
     const response = await this.client.get<OlindaResponse<ExpectativaMercado>>(
       "https://olinda.bcb.gov.br/olinda/servico/Expectativas/versao/v1/odata/ExpectativaMercadoMensais",
+      { params: queryParams },
+    );
+
+    return response.value;
+  }
+
+  async ifdata(params: IfDataParams = {}): Promise<IfDataItem[]> {
+    const queryParams: Record<string, string> = { $format: "json" };
+
+    if (params.top !== undefined) {
+      queryParams.$top = String(params.top);
+    }
+    if (params.skip !== undefined) {
+      queryParams.$skip = String(params.skip);
+    }
+    if (params.filter) {
+      queryParams.$filter = params.filter;
+    } else {
+      const filters: string[] = [];
+      if (params.codInst) {
+        filters.push(`CodInst eq '${params.codInst}'`);
+      }
+      if (params.anoBase !== undefined) {
+        filters.push(`AnoBase eq ${params.anoBase}`);
+      }
+      if (filters.length > 0) {
+        queryParams.$filter = filters.join(" and ");
+      }
+    }
+    if (params.orderBy) {
+      queryParams.$orderby = params.orderBy;
+    }
+
+    const response = await this.client.get<OlindaResponse<IfDataItem>>(
+      "https://olinda.bcb.gov.br/olinda/servico/IF.data/versao/v1/odata/IfData",
       { params: queryParams },
     );
 

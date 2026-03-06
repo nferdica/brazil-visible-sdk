@@ -75,6 +75,68 @@ export interface IbamaMulta {
   [key: string]: string | number;
 }
 
+// ── CAR Types (Cadastro Ambiental Rural) ────────────────────────
+
+export interface CarParams {
+  uf?: string;
+  municipio?: string;
+  pagina?: number;
+  tamanhoPagina?: number;
+}
+
+export interface CarImovel {
+  codigoImovel: string;
+  municipio: string;
+  uf: string;
+  areaImovel: string;
+  situacao: string;
+  tipoImovel: string;
+  [key: string]: string;
+}
+
+// ── Unidades de Conservação Types (ICMBio) ──────────────────────
+
+export interface UcParams {
+  categoria?: string;
+  uf?: string;
+  esfera?: string;
+}
+
+export interface UnidadeConservacao {
+  nome: string;
+  categoria: string;
+  uf: string;
+  esfera: string;
+  areaHa: string;
+  anoCreiacao: string;
+  biomaIbge: string;
+  [key: string]: string;
+}
+
+// ── Recursos Hídricos Types (ANA) ──────────────────────────────
+
+export interface RecursosHidricosParams {
+  q?: string;
+  rows?: number;
+}
+
+export interface RecursoHidrico {
+  nome: string;
+  codigo: string;
+  rio: string;
+  bacia: string;
+  subBacia: string;
+  uf: string;
+  municipio: string;
+  [key: string]: string;
+}
+
+interface CkanResponse {
+  result: {
+    results: RecursoHidrico[];
+  };
+}
+
 // ── Source ────────────────────────────────────────────────────────
 
 export class AmbienteSource extends Source {
@@ -83,6 +145,10 @@ export class AmbienteSource extends Source {
 
   private readonly focosBaseUrl = "https://api.focos.inpe.br";
   private readonly ibamaBaseUrl = "https://dados.ibama.gov.br/dados";
+  private readonly carBaseUrl = "https://car.gov.br/publico/api/imoveis";
+  private readonly ucBaseUrl =
+    "https://api.dados.gov.br/v1/conjuntos-dados/unidades-de-conservacao/recursos";
+  private readonly anaBaseUrl = "https://dadosabertos.ana.gov.br/api/3/action/package_search";
 
   // ── PRODES — Deforestation data ───────────────────────────────
 
@@ -159,5 +225,67 @@ export class AmbienteSource extends Source {
     return this.client.get<IbamaMulta[]>(`${this.ibamaBaseUrl}/multas`, {
       params: queryParams,
     });
+  }
+
+  // ── CAR — Cadastro Ambiental Rural ──────────────────────────────
+
+  async car(params?: CarParams): Promise<CarImovel[]> {
+    const queryParams: Record<string, string | number | undefined> = {};
+
+    if (params?.uf !== undefined) {
+      queryParams.uf = params.uf;
+    }
+    if (params?.municipio !== undefined) {
+      queryParams.municipio = params.municipio;
+    }
+    if (params?.pagina !== undefined) {
+      queryParams.pagina = params.pagina;
+    }
+    if (params?.tamanhoPagina !== undefined) {
+      queryParams.tamanhoPagina = params.tamanhoPagina;
+    }
+
+    return this.client.get<CarImovel[]>(this.carBaseUrl, {
+      params: queryParams,
+    });
+  }
+
+  // ── Unidades de Conservação — Conservation Units (ICMBio) ──────
+
+  async unidadesConservacao(params?: UcParams): Promise<UnidadeConservacao[]> {
+    const queryParams: Record<string, string | number | undefined> = {};
+
+    if (params?.categoria !== undefined) {
+      queryParams.categoria = params.categoria;
+    }
+    if (params?.uf !== undefined) {
+      queryParams.uf = params.uf;
+    }
+    if (params?.esfera !== undefined) {
+      queryParams.esfera = params.esfera;
+    }
+
+    return this.client.get<UnidadeConservacao[]>(this.ucBaseUrl, {
+      params: queryParams,
+    });
+  }
+
+  // ── Recursos Hídricos — Water Resources (ANA) ─────────────────
+
+  async recursosHidricos(params?: RecursosHidricosParams): Promise<RecursoHidrico[]> {
+    const queryParams: Record<string, string | number | undefined> = {};
+
+    if (params?.q !== undefined) {
+      queryParams.q = params.q;
+    }
+    if (params?.rows !== undefined) {
+      queryParams.rows = params.rows;
+    }
+
+    const response = await this.client.get<CkanResponse>(this.anaBaseUrl, {
+      params: queryParams,
+    });
+
+    return response.result.results;
   }
 }

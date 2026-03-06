@@ -37,6 +37,22 @@ export interface Recurso {
   [key: string]: string | number;
 }
 
+export interface BaseDadosParams {
+  q?: string;
+  rows?: number;
+  start?: number;
+}
+
+export interface BaseDadosDataset {
+  id: string;
+  name: string;
+  title: string;
+  organization: string;
+  notes: string;
+  num_resources: number;
+  [key: string]: string | number;
+}
+
 export interface TesouroTransparenteParams {
   ano?: number;
   orgao?: string;
@@ -83,6 +99,20 @@ export class PortaisSource extends Source {
       `${this.baseUrl}/conjuntos-dados/${params.conjuntoId}/recursos`,
     );
     return response.result ?? response;
+  }
+
+  async baseDados(params?: BaseDadosParams): Promise<BaseDadosDataset[]> {
+    const response = await this.client.get<{
+      success: boolean;
+      result: { results: BaseDadosDataset[] };
+    }>("https://basedosdados.org/api/3/action/package_search", {
+      params: {
+        q: params?.q,
+        rows: params?.rows,
+        start: params?.start,
+      },
+    });
+    return response.result.results;
   }
 
   async execucaoOrcamentaria(params?: TesouroTransparenteParams): Promise<ExecucaoOrcamentaria[]> {

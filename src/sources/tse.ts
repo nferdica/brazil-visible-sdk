@@ -133,6 +133,40 @@ export interface ResultadoVotacao {
   [key: string]: string;
 }
 
+export interface PrestacaoConta {
+  SQ_CANDIDATO: string;
+  NR_CPF_CNPJ_DOADOR: string;
+  NM_DOADOR: string;
+  VR_RECEITA: string;
+  DS_ORIGEM_RECEITA: string;
+  DS_NATUREZA_RECEITA: string;
+  [key: string]: string;
+}
+
+export interface Eleitor {
+  NR_ZONA: string;
+  NR_SECAO: string;
+  CD_MUNICIPIO: string;
+  NM_MUNICIPIO: string;
+  SG_UF: string;
+  QT_ELEITORES_PERFIL: string;
+  CD_GENERO: string;
+  CD_FAIXA_ETARIA: string;
+  CD_GRAU_ESCOLARIDADE: string;
+  [key: string]: string;
+}
+
+export interface BoletimUrna {
+  SG_UF: string;
+  CD_MUNICIPIO: string;
+  NR_ZONA: string;
+  NR_SECAO: string;
+  NR_VOTAVEL: string;
+  QT_VOTOS: string;
+  DS_CARGO: string;
+  [key: string]: string;
+}
+
 // ── URL Builders ──────────────────────────────────────────────────
 
 const TSE_CDN = "https://cdn.tse.jus.br/estatistica/sead/odsele";
@@ -176,6 +210,24 @@ export class TseSource extends Source {
     this.validateAno(params.ano);
     const url = tseZipUrl("votacao_candidato_munzona", params.ano);
     return this.downloadAndParse<ResultadoVotacao>(url, `tse-result-${params.ano}`, params);
+  }
+
+  async prestacaoContas(params: TseDownloadParams): Promise<PrestacaoConta[]> {
+    this.validateAno(params.ano);
+    const url = tseZipUrl("prestacao_contas", params.ano);
+    return this.downloadAndParse<PrestacaoConta>(url, `tse-prestacao-${params.ano}`, params);
+  }
+
+  async eleitorado(params: TseDownloadParams): Promise<Eleitor[]> {
+    this.validateAno(params.ano);
+    const url = tseZipUrl("eleitorado", params.ano);
+    return this.downloadAndParse<Eleitor>(url, `tse-eleitorado-${params.ano}`, params);
+  }
+
+  async boletins(params: TseDownloadParams): Promise<BoletimUrna[]> {
+    this.validateAno(params.ano);
+    const url = tseZipUrl("boletim_urna", params.ano);
+    return this.downloadAndParse<BoletimUrna>(url, `tse-boletim-${params.ano}`, params);
   }
 
   async filiados(params: { partido: string; estado: string }): Promise<Filiado[]> {

@@ -99,6 +99,17 @@ export interface CensoEscolarEscola {
   [key: string]: string;
 }
 
+export interface FndeRepasse {
+  ANO: string;
+  MES: string;
+  UF: string;
+  MUNICIPIO: string;
+  PROGRAMA: string;
+  ACAO: string;
+  VALOR_TOTAL: string;
+  [key: string]: string;
+}
+
 export interface CensoSuperiorIes {
   NU_ANO_CENSO: string;
   CO_IES: string;
@@ -126,6 +137,9 @@ export interface CensoSuperiorIes {
 // ── URL Builders ──────────────────────────────────────────────────
 
 const INEP_BASE = "https://download.inep.gov.br/microdados";
+
+const FNDE_CSV_URL =
+  "https://www.fnde.gov.br/dadosabertos/dataset/recursos-repassados-fnde/resource/fnde_repasses.csv";
 
 function enemUrl(ano: number): string {
   return `${INEP_BASE}/microdados_enem_${ano}.zip`;
@@ -173,6 +187,30 @@ export class InepSource extends Source {
       censoSuperiorUrl(params.ano),
       `inep-censo-superior-${params.ano}`,
     );
+  }
+
+  async fnde(): Promise<FndeRepasse[]> {
+    const cacheKey = "inep-fnde";
+    const cached = await this.cache.get(cacheKey);
+    if (cached) {
+      return parseCsvFile<FndeRepasse>(join(cached, "fnde_repasses.csv"), {
+        delimiter: ";",
+        encoding: "latin1",
+      });
+    }
+
+    const downloadDir = join(this.cache.getCacheDir(), cacheKey);
+    const csvPath = await download(FNDE_CSV_URL, {
+      destDir: downloadDir,
+      filename: "fnde_repasses.csv",
+    });
+
+    await this.cache.put(cacheKey, downloadDir);
+
+    return parseCsvFile<FndeRepasse>(csvPath, {
+      delimiter: ";",
+      encoding: "latin1",
+    });
   }
 
   // ── Private Helpers ──────────────────────────────────────────

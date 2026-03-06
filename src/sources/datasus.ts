@@ -58,6 +58,37 @@ export interface SihInternacao {
   [key: string]: string;
 }
 
+export interface SinanNotificacao {
+  DT_NOTIFIC: string;
+  SG_UF_NOT: string;
+  ID_MUNICIP: string;
+  ID_AGRAVO: string;
+  DT_SIN_PRI: string;
+  CS_SEXO: string;
+  NU_IDADE_N: string;
+  CS_RACA: string;
+  CS_ESCOL_N: string;
+  CLASSI_FIN: string;
+  EVOLUCAO: string;
+  [key: string]: string;
+}
+
+export interface SinascNascimento {
+  DTNASC: string;
+  CODMUNNASC: string;
+  IDADEMAE: string;
+  ESCMAE: string;
+  CODOCUPMAE: string;
+  QTDFILVIVO: string;
+  GESTACAO: string;
+  GRAVIDEZ: string;
+  PARTO: string;
+  PESO: string;
+  SEXO: string;
+  RACACOR: string;
+  [key: string]: string;
+}
+
 // ── Source ──────────────────────────────────────────────────────────
 
 const DATASUS_FTP = "ftp://ftp.datasus.gov.br/dissemin/publicos";
@@ -167,6 +198,70 @@ export class DataSusSource extends Source {
     } catch {
       throw new BVError(
         `DATASUS SIH: Dados FTP podem nao estar disponiveis via HTTP. Arquivos originais em formato DBC requerem conversao especial. Use o TABNET online em ${DATASUS_CSV_BASE} como alternativa.`,
+        "datasus",
+      );
+    }
+  }
+
+  async sinan(params: DataSusParams): Promise<SinanNotificacao[]> {
+    this.validateAno(params.ano);
+    const uf = params.uf?.toUpperCase() ?? "BR";
+    const cacheKey = `datasus-sinan-${params.ano}-${uf}`;
+
+    const cached = await this.cache.get(cacheKey);
+    if (cached) {
+      return this.parseCsvDir<SinanNotificacao>(cached);
+    }
+
+    const url = `${DATASUS_FTP}/SINAN/DADOS/FINALDENG${uf}${params.ano}.csv`;
+
+    try {
+      const downloadDir = join(this.cache.getCacheDir(), cacheKey);
+      const filePath = await download(url, {
+        destDir: downloadDir,
+        filename: `sinan_${uf}_${params.ano}.csv`,
+      });
+
+      await this.cache.put(cacheKey, downloadDir);
+      return parseCsvFile<SinanNotificacao>(filePath, {
+        delimiter: ";",
+        encoding: "latin1",
+      });
+    } catch {
+      throw new BVError(
+        `DATASUS SINAN: Dados FTP podem nao estar disponiveis via HTTP. Arquivos originais em formato DBC requerem conversao especial. Use o TABNET online em ${DATASUS_CSV_BASE} como alternativa.`,
+        "datasus",
+      );
+    }
+  }
+
+  async sinasc(params: DataSusParams): Promise<SinascNascimento[]> {
+    this.validateAno(params.ano);
+    const uf = params.uf?.toUpperCase() ?? "BR";
+    const cacheKey = `datasus-sinasc-${params.ano}-${uf}`;
+
+    const cached = await this.cache.get(cacheKey);
+    if (cached) {
+      return this.parseCsvDir<SinascNascimento>(cached);
+    }
+
+    const url = `${DATASUS_FTP}/SINASC/NOV/DNRES/DN${uf}${params.ano}.csv`;
+
+    try {
+      const downloadDir = join(this.cache.getCacheDir(), cacheKey);
+      const filePath = await download(url, {
+        destDir: downloadDir,
+        filename: `sinasc_${uf}_${params.ano}.csv`,
+      });
+
+      await this.cache.put(cacheKey, downloadDir);
+      return parseCsvFile<SinascNascimento>(filePath, {
+        delimiter: ";",
+        encoding: "latin1",
+      });
+    } catch {
+      throw new BVError(
+        `DATASUS SINASC: Dados FTP podem nao estar disponiveis via HTTP. Arquivos originais em formato DBC requerem conversao especial. Use o TABNET online em ${DATASUS_CSV_BASE} como alternativa.`,
         "datasus",
       );
     }

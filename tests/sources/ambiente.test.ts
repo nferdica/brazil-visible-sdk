@@ -10,6 +10,9 @@ const ambiente = new AmbienteSource({ client });
 const TERRABRASILIS_BASE = "https://terrabrasilis.dpi.inpe.br/api";
 const FOCOS_BASE = "https://api.focos.inpe.br";
 const IBAMA_BASE = "https://dados.ibama.gov.br/dados";
+const CAR_BASE = "https://car.gov.br/publico/api/imoveis";
+const UC_BASE = "https://api.dados.gov.br/v1/conjuntos-dados/unidades-de-conservacao/recursos";
+const ANA_BASE = "https://dadosabertos.ana.gov.br/api/3/action/package_search";
 
 describe("AmbienteSource", () => {
   it("has correct name and baseUrl", () => {
@@ -202,6 +205,168 @@ describe("AmbienteSource", () => {
       );
 
       const result = await ambiente.ibamaMultas({ uf: "MT", municipio: "Cuiaba" });
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe("car", () => {
+    it("returns rural property data", async () => {
+      server.use(
+        http.get(CAR_BASE, () => {
+          return HttpResponse.json([
+            {
+              codigoImovel: "PA-1500602-001",
+              municipio: "Altamira",
+              uf: "PA",
+              areaImovel: "250.5",
+              situacao: "Ativo",
+              tipoImovel: "IRU",
+            },
+            {
+              codigoImovel: "MT-5100201-003",
+              municipio: "Cuiaba",
+              uf: "MT",
+              areaImovel: "1200.0",
+              situacao: "Pendente",
+              tipoImovel: "IRU",
+            },
+          ]);
+        }),
+      );
+
+      const result = await ambiente.car();
+      expect(result).toHaveLength(2);
+      expect(result[0]?.codigoImovel).toBe("PA-1500602-001");
+      expect(result[0]?.uf).toBe("PA");
+      expect(result[0]?.areaImovel).toBe("250.5");
+      expect(result[1]?.municipio).toBe("Cuiaba");
+    });
+
+    it("passes query params", async () => {
+      server.use(
+        http.get(CAR_BASE, ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get("uf")).toBe("MT");
+          expect(url.searchParams.get("municipio")).toBe("5100201");
+          expect(url.searchParams.get("pagina")).toBe("1");
+          expect(url.searchParams.get("tamanhoPagina")).toBe("50");
+          return HttpResponse.json([]);
+        }),
+      );
+
+      const result = await ambiente.car({
+        uf: "MT",
+        municipio: "5100201",
+        pagina: 1,
+        tamanhoPagina: 50,
+      });
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe("unidadesConservacao", () => {
+    it("returns conservation unit data", async () => {
+      server.use(
+        http.get(UC_BASE, () => {
+          return HttpResponse.json([
+            {
+              nome: "Parque Nacional da Amazonia",
+              categoria: "Parque Nacional",
+              uf: "PA",
+              esfera: "Federal",
+              areaHa: "1089439",
+              anoCreiacao: "1974",
+              biomaIbge: "Amazonia",
+            },
+          ]);
+        }),
+      );
+
+      const result = await ambiente.unidadesConservacao();
+      expect(result).toHaveLength(1);
+      expect(result[0]?.nome).toBe("Parque Nacional da Amazonia");
+      expect(result[0]?.categoria).toBe("Parque Nacional");
+      expect(result[0]?.esfera).toBe("Federal");
+      expect(result[0]?.areaHa).toBe("1089439");
+    });
+
+    it("passes query params", async () => {
+      server.use(
+        http.get(UC_BASE, ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get("categoria")).toBe("Parque Nacional");
+          expect(url.searchParams.get("uf")).toBe("AM");
+          expect(url.searchParams.get("esfera")).toBe("Federal");
+          return HttpResponse.json([]);
+        }),
+      );
+
+      const result = await ambiente.unidadesConservacao({
+        categoria: "Parque Nacional",
+        uf: "AM",
+        esfera: "Federal",
+      });
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe("recursosHidricos", () => {
+    it("returns water resources data, unwrapping CKAN response", async () => {
+      server.use(
+        http.get(ANA_BASE, () => {
+          return HttpResponse.json({
+            result: {
+              results: [
+                {
+                  nome: "Rio Amazonas",
+                  codigo: "001",
+                  rio: "Amazonas",
+                  bacia: "Amazonica",
+                  subBacia: "Alto Amazonas",
+                  uf: "AM",
+                  municipio: "Manaus",
+                },
+                {
+                  nome: "Rio Sao Francisco",
+                  codigo: "002",
+                  rio: "Sao Francisco",
+                  bacia: "Sao Francisco",
+                  subBacia: "Alto Sao Francisco",
+                  uf: "MG",
+                  municipio: "Tres Marias",
+                },
+              ],
+            },
+          });
+        }),
+      );
+
+      const result = await ambiente.recursosHidricos();
+      expect(result).toHaveLength(2);
+      expect(result[0]?.nome).toBe("Rio Amazonas");
+      expect(result[0]?.bacia).toBe("Amazonica");
+      expect(result[1]?.rio).toBe("Sao Francisco");
+      expect(result[1]?.uf).toBe("MG");
+    });
+
+    it("passes query params", async () => {
+      server.use(
+        http.get(ANA_BASE, ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get("q")).toBe("rio amazonas");
+          expect(url.searchParams.get("rows")).toBe("10");
+          return HttpResponse.json({
+            result: {
+              results: [],
+            },
+          });
+        }),
+      );
+
+      const result = await ambiente.recursosHidricos({
+        q: "rio amazonas",
+        rows: 10,
+      });
       expect(result).toEqual([]);
     });
   });

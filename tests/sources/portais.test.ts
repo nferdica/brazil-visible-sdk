@@ -73,6 +73,65 @@ describe("PortaisSource", () => {
     });
   });
 
+  describe("baseDados", () => {
+    it("searches Base dos Dados datasets", async () => {
+      server.use(
+        http.get("https://basedosdados.org/api/3/action/package_search", ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get("q")).toBe("educacao");
+          expect(url.searchParams.get("rows")).toBe("10");
+          return HttpResponse.json({
+            success: true,
+            result: {
+              results: [
+                {
+                  id: "bd-001",
+                  name: "educacao-basica",
+                  title: "Educacao Basica",
+                  organization: "INEP",
+                  notes: "Dados de educacao basica no Brasil",
+                  num_resources: 3,
+                },
+              ],
+            },
+          });
+        }),
+      );
+
+      const result = await portais.baseDados({ q: "educacao", rows: 10 });
+      expect(result).toHaveLength(1);
+      expect(result[0]?.title).toBe("Educacao Basica");
+      expect(result[0]?.organization).toBe("INEP");
+      expect(result[0]?.num_resources).toBe(3);
+    });
+
+    it("returns datasets without params", async () => {
+      server.use(
+        http.get("https://basedosdados.org/api/3/action/package_search", () => {
+          return HttpResponse.json({
+            success: true,
+            result: {
+              results: [
+                {
+                  id: "bd-002",
+                  name: "pib-municipal",
+                  title: "PIB Municipal",
+                  organization: "IBGE",
+                  notes: "PIB por municipio",
+                  num_resources: 1,
+                },
+              ],
+            },
+          });
+        }),
+      );
+
+      const result = await portais.baseDados();
+      expect(result).toHaveLength(1);
+      expect(result[0]?.name).toBe("pib-municipal");
+    });
+  });
+
   describe("execucaoOrcamentaria", () => {
     it("returns budget execution data", async () => {
       server.use(
