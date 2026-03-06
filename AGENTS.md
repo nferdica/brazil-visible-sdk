@@ -4,9 +4,9 @@
 
 ## Visao Geral
 
-SDK Python unificado para acesso a 93+ fontes de dados publicos brasileiros. Oferece uma interface programatica unica sobre APIs REST, downloads CSV, FTP e portais do governo federal.
+SDK TypeScript unificado para acesso a 93+ fontes de dados publicos brasileiros. Oferece uma interface programatica unica sobre APIs REST, downloads CSV, FTP e portais do governo federal.
 
-**Proposta de valor**: Ninguem unificou o acesso a dados publicos brasileiros num unico pacote. Existem SDKs isolados por orgao (python-bcb, pysus, sidra), mas nenhum que cubra o ecossistema inteiro. Este SDK resolve isso.
+**Proposta de valor**: Ninguem unificou o acesso a dados publicos brasileiros num unico pacote. Existem SDKs isolados por orgao (python-bcb, pysus, sidra), mas nenhum em TypeScript/JavaScript que cubra o ecossistema inteiro. Este SDK resolve isso — e alcanca o maior ecossistema de desenvolvedores do mundo.
 
 **Repositorio irmao**: [brazil-visible](https://github.com/nferdica/brazil-visible) — catalogo de documentacao com 92 APIs mapeadas em frontmatter YAML estruturado (url_base, formato_dados, campos_chave, tipo_acesso, autenticacao). Esse frontmatter e a base de configuracao do SDK.
 
@@ -15,8 +15,9 @@ SDK Python unificado para acesso a 93+ fontes de dados publicos brasileiros. Ofe
 ## Publico-Alvo
 
 1. **Jornalistas de dados** — Abraji, Agencia Publica, Fiquem Sabendo. Querem cruzar bases sem perder horas com boilerplate.
-2. **Pesquisadores academicos** — ciencia politica, economia, saude publica. Cada mestrando reinventa o acesso a IBGE/DATASUS.
-3. **Desenvolvedores civicos** — comunidade br/acc, civic hackers. Querem construir ferramentas de fiscalizacao sem gastar tempo em ETL.
+2. **Pesquisadores academicos** — ciencia politica, economia, saude publica. Scripts rapidos em Node/Deno/Bun.
+3. **Desenvolvedores civicos** — comunidade br/acc, civic hackers. Querem construir ferramentas de fiscalizacao com tipagem forte e ecossistema npm.
+4. **Desenvolvedores fullstack** — ja usam TypeScript no front e no back, agora podem acessar dados publicos nativamente.
 
 ---
 
@@ -24,122 +25,132 @@ SDK Python unificado para acesso a 93+ fontes de dados publicos brasileiros. Ofe
 
 ### Principios
 
-- **Uma interface, muitas fontes**: `from brazilvisible import ibge` — independente se a fonte e REST, CSV ou FTP
-- **DataFrame-first**: Toda resposta retorna `pandas.DataFrame` por padrao (com opcao de dict/JSON)
+- **Uma interface, muitas fontes**: `import { ibge, bcb } from 'brazilvisible'` — independente se a fonte e REST, CSV ou FTP
+- **Typed-first**: Toda resposta retorna arrays tipados `T[]` com interfaces completas para cada fonte
 - **Zero config para 80% dos casos**: 80% das APIs nao exigem autenticacao
+- **Zero deps HTTP**: Usa `fetch` nativo (Node >=18) — sem axios, got ou undici no core
 - **Fail-fast com mensagens claras**: Se uma API esta fora do ar, erro descritivo com link para o health check
-- **Tipagem completa**: Type hints em todo o codebase, compativel com mypy strict
+- **Tree-shakeable**: Importar `ibge` nao puxa codigo de `datasus`
 
 ### Estrutura do Pacote
 
 ```
 src/
-  brazilvisible/
-    __init__.py           # Re-exports publicos (ibge, bcb, cgu, etc.)
-    _client.py            # Cliente HTTP base (httpx, retries, rate limiting, user-agent)
-    _types.py             # Tipos compartilhados (BVResponse, Pagination, etc.)
-    _cache.py             # Cache local opcional (respostas, downloads)
-    _download.py          # Utilitarios para download + descompressao (ZIP, GZ)
-    _parsers.py           # Parsers de formato (CSV, JSON, XML, DBC, XLS)
-    _exceptions.py        # Hierarquia de excecoes (BVError, SourceOfflineError, AuthRequiredError)
-    py.typed              # Marker PEP 561
-    sources/
-      __init__.py
-      _base.py            # Classe abstrata Source com interface padrao
-      ibge.py             # IBGE (Sidra, Agregados, Censos)
-      bcb.py              # Banco Central (SGS series, IFData)
-      cgu.py              # CGU Portal da Transparencia (CEIS, CNEP, CEPIM, contratos, servidores, emendas, viagens)
-      receita.py          # Receita Federal (CNPJ, QSA, Estabelecimentos, Simples)
-      tse.py              # TSE (candidaturas, resultados, prestacao de contas, bens, filiados, boletins, eleitorado)
-      tesouro.py          # Tesouro Nacional (SICONFI, SIAFI, SIOP)
-      inep.py             # INEP/Educacao (ENEM, Censo Escolar, Censo Superior, FNDE)
-      datasus.py          # DATASUS (TabNet, CNES, SIH, SIM, SINAN, SINASC)
-      cnj.py              # CNJ (DataJud, BNMP, SisbaJud, Justica em Numeros)
-      ambiente.py         # Meio Ambiente (PRODES, DETER, CAR, focos calor, IBAMA, unidades conservacao, recursos hidricos)
-      trabalho.py         # Trabalho (RAIS, CAGED)
-      previdencia.py      # Previdencia (INSS, PREVIC)
-      mercado.py          # Mercado Financeiro (CVM DFP/ITR, CVM Administradores, CVM Fatos Relevantes, B3)
-      ipea.py             # IPEA (IpeaData)
-      transportes.py      # Transportes (ANAC, PRF, DNIT, ANTT, DENATRAN)
-      reguladoras.py      # Agencias Reguladoras (ANATEL, ANEEL, ANP, ANVISA)
-      geo.py              # Dados Geoespaciais (IBGE Geociencias, CPRM, INCRA, INDE, INPE)
-      diarios.py          # Diarios Oficiais (DOU, DOEs estaduais)
-      governamentais.py   # APIs Governamentais (CADIN, SIAPE, SIORG)
-      seguranca.py        # Seguranca Publica (SINESP)
-      outros.py           # Outros (ANS, ANTAQ, ANCINE)
-      portais.py          # Portais Centrais (Portal Dados Abertos, Base dos Dados, Tesouro Transparente, Portal Transparencia)
-tests/
-  __init__.py
-  conftest.py             # Fixtures compartilhadas (mock HTTP, sample DataFrames)
-  test_client.py
-  test_parsers.py
+  index.ts                # Re-exports publicos (ibge, bcb, cgu, etc.)
+  client.ts               # Cliente HTTP base (fetch, retries, rate limiting, user-agent)
+  types.ts                # Tipos compartilhados (BVResponse, Pagination, etc.)
+  cache.ts                # Cache local opcional (respostas, downloads)
+  download.ts             # Utilitarios para download + descompressao (ZIP, GZ)
+  parsers.ts              # Parsers de formato (CSV, JSON, XML)
+  errors.ts               # Hierarquia de excecoes (BVError, SourceOfflineError, AuthRequiredError)
+  config.ts               # Configuracao global (API keys, timeouts)
   sources/
-    test_ibge.py
-    test_bcb.py
-    test_cgu.py
+    index.ts              # Re-exports de todos os sources
+    base.ts               # Interface abstrata Source
+    ibge.ts               # IBGE (Sidra, Agregados, Censos)
+    bcb.ts                # Banco Central (SGS series, IFData)
+    cgu.ts                # CGU Portal da Transparencia (CEIS, CNEP, CEPIM, contratos, servidores, emendas, viagens)
+    receita.ts            # Receita Federal (CNPJ, QSA, Estabelecimentos, Simples)
+    tse.ts                # TSE (candidaturas, resultados, prestacao de contas, bens, filiados, boletins, eleitorado)
+    tesouro.ts            # Tesouro Nacional (SICONFI, SIAFI, SIOP)
+    inep.ts               # INEP/Educacao (ENEM, Censo Escolar, Censo Superior, FNDE)
+    datasus.ts            # DATASUS (TabNet, CNES, SIH, SIM, SINAN, SINASC)
+    cnj.ts                # CNJ (DataJud, BNMP, SisbaJud, Justica em Numeros)
+    ambiente.ts           # Meio Ambiente (PRODES, DETER, CAR, focos calor, IBAMA, UC, recursos hidricos)
+    trabalho.ts           # Trabalho (RAIS, CAGED)
+    previdencia.ts        # Previdencia (INSS, PREVIC)
+    mercado.ts            # Mercado Financeiro (CVM DFP/ITR, CVM Administradores, CVM Fatos Relevantes, B3)
+    ipea.ts               # IPEA (IpeaData)
+    transportes.ts        # Transportes (ANAC, PRF, DNIT, ANTT, DENATRAN)
+    reguladoras.ts        # Agencias Reguladoras (ANATEL, ANEEL, ANP, ANVISA)
+    geo.ts                # Dados Geoespaciais (IBGE Geociencias, CPRM, INCRA, INDE, INPE)
+    diarios.ts            # Diarios Oficiais (DOU, DOEs estaduais)
+    governamentais.ts     # APIs Governamentais (CADIN, SIAPE, SIORG)
+    seguranca.ts          # Seguranca Publica (SINESP)
+    outros.ts             # Outros (ANS, ANTAQ, ANCINE)
+    portais.ts            # Portais Centrais (Portal Dados Abertos, Base dos Dados, Tesouro Transparente, Portal Transparencia)
+tests/
+  sources/
+    ibge.test.ts
+    bcb.test.ts
+    cgu.test.ts
     ...
+  client.test.ts
+  parsers.test.ts
 examples/
-  quickstart.py           # Exemplo minimo de uso
-  cruzamento_licitacoes_sancoes.py  # Receita de cruzamento adaptada
+  quickstart.ts           # Exemplo minimo de uso
+  cruzamento-licitacoes-sancoes.ts  # Receita de cruzamento adaptada
 ```
 
-### Classe Base Source
+### Interface Source (base abstrata)
 
 Toda fonte implementa esta interface:
 
-```python
-from abc import ABC, abstractmethod
-import pandas as pd
-from brazilvisible._client import BVClient
-from brazilvisible._types import BVResponse
+```typescript
+import type { BVClient } from "../client";
 
-class Source(ABC):
-    """Classe base para todas as fontes de dados."""
+export interface SourceConfig {
+  client?: BVClient;
+}
 
-    def __init__(self, client: BVClient | None = None):
-        self._client = client or BVClient()
+export abstract class Source {
+  protected client: BVClient;
 
-    @property
-    @abstractmethod
-    def name(self) -> str:
-        """Nome legivel da fonte (ex: 'IBGE Agregados')."""
-        ...
+  constructor(config?: SourceConfig) {
+    this.client = config?.client ?? getDefaultClient();
+  }
 
-    @property
-    @abstractmethod
-    def base_url(self) -> str:
-        """URL base da API/fonte."""
-        ...
+  /** Nome legivel da fonte (ex: 'IBGE Agregados'). */
+  abstract readonly name: string;
 
-    @property
-    def auth_required(self) -> bool:
-        """Se a fonte exige autenticacao. Default: False."""
-        return False
+  /** URL base da API/fonte. */
+  abstract readonly baseUrl: string;
+
+  /** Se a fonte exige autenticacao. Default: false. */
+  readonly authRequired: boolean = false;
+}
 ```
 
 ### Cliente HTTP
 
-```python
-import httpx
+```typescript
+export interface BVClientConfig {
+  timeout?: number;       // ms, default 30000
+  maxRetries?: number;    // default 3
+  apiKeys?: Record<string, string>;
+}
 
-class BVClient:
-    """Cliente HTTP compartilhado com retry, rate limiting e headers padrao."""
+export class BVClient {
+  static readonly DEFAULT_HEADERS: Record<string, string> = {
+    "User-Agent": "BrazilVisibleSDK/0.1 (https://brazilvisible.org)",
+    "Accept": "application/json, text/csv, */*",
+  };
 
-    DEFAULT_HEADERS = {
-        "User-Agent": "BrazilVisibleSDK/0.1 (https://brazilvisible.org)",
-        "Accept": "application/json, text/csv, */*",
-    }
+  constructor(config?: BVClientConfig) { /* ... */ }
 
-    def __init__(
-        self,
-        timeout: float = 30.0,
-        max_retries: int = 3,
-        api_keys: dict[str, str] | None = None,
-    ):
-        ...
+  async get<T>(url: string, options?: RequestOptions): Promise<T> { /* ... */ }
+  async post<T>(url: string, body: unknown, options?: RequestOptions): Promise<T> { /* ... */ }
+}
 ```
 
-A chave `api_keys` e um dict de `{source_name: key}`, ex: `{"cgu": "abc123"}`. Configuravel tambem via env vars: `BV_CGU_API_KEY`, `BV_GOV_BR_TOKEN`, etc.
+A chave `apiKeys` e um `Record<string, string>` de `{sourceName: key}`, ex: `{ cgu: "abc123" }`. Configuravel tambem via env vars: `BV_CGU_API_KEY`, `BV_GOV_BR_TOKEN`, etc.
+
+### Retorno de Dados
+
+Em vez de DataFrames (conceito Python), o SDK retorna **arrays tipados**:
+
+```typescript
+// Cada fonte define suas interfaces de retorno
+interface SgsSerie {
+  data: string;
+  valor: number;
+}
+
+// Uso
+const selic: SgsSerie[] = await bcb.sgs({ serie: 11, inicio: "2024-01-01" });
+```
+
+Para quem precisa de analise tabular, os arrays sao compatíveis com bibliotecas como `danfojs`, `arquero`, ou simplesmente `Array.prototype.filter/map/reduce`.
 
 ---
 
@@ -147,7 +158,7 @@ A chave `api_keys` e um dict de `{source_name: key}`, ex: `{"cgu": "abc123"}`. C
 
 ### REST APIs (41 fontes) — Fase 1 Priority
 
-Estas sao wrappers HTTP diretos. A resposta ja vem em JSON, basta parsear.
+Wrappers HTTP diretos. A resposta ja vem em JSON, basta parsear e tipar.
 
 **Sem autenticacao:**
 - IBGE Agregados/Sidra (servicodados.ibge.gov.br)
@@ -169,7 +180,7 @@ Estas sao wrappers HTTP diretos. A resposta ja vem em JSON, basta parsear.
 
 ### Download CSV/ZIP (31 fontes) — Fase 2
 
-O SDK baixa o arquivo, descompacta, e retorna DataFrame.
+O SDK baixa o arquivo, descompacta, parseia CSV e retorna array tipado.
 
 - TSE — 7 bases (dadosabertos.tse.jus.br) — ZIP com CSVs
 - Receita Federal — 4 bases (cnpj, qsa, estabelecimentos, simples) — ZIP com CSVs grandes (>1GB)
@@ -183,12 +194,12 @@ O SDK baixa o arquivo, descompacta, e retorna DataFrame.
 ### FTP + Formato Legacy (5 fontes) — Fase 3
 
 - DATASUS (SIM, SIH, SINAN, SINASC, CNES) — FTP com arquivos .dbc/.dbf
-- Requer: ftplib + pysus/read-dbc para converter DBC -> DataFrame
+- Requer: parser DBC customizado ou wrapper para binario nativo
 
 ### Geoespacial (8 fontes) — Fase 3
 
 - INCRA, CPRM, INDE, INPE Satelite — WMS/WFS/Shapefile/GeoTIFF
-- Requer: geopandas, fiona (extras opcionais)
+- Requer: libs geoespaciais (potencialmente via extra opcional)
 
 ### Web-Only sem API (3 fontes) — Fase 3 ou skip
 
@@ -204,38 +215,37 @@ O SDK baixa o arquivo, descompacta, e retorna DataFrame.
 **Objetivo**: SDK funcional com as 41 REST APIs mais uteis.
 
 **Entregaveis**:
-1. `_client.py` — Cliente HTTP com httpx, retry, timeout, rate limiting
-2. `_types.py` — BVResponse, paginacao
-3. `_exceptions.py` — Hierarquia de erros
-4. Modulos de source: `ibge.py`, `bcb.py`, `cgu.py`, `tesouro.py`, `ipea.py`, `cnj.py`
-5. Testes unitarios com respostas mockadas (httpx + respx ou pytest-httpx)
-6. `examples/quickstart.py`
+1. `client.ts` — Cliente HTTP com fetch nativo, retry, timeout, rate limiting
+2. `types.ts` — Tipos compartilhados, paginacao
+3. `errors.ts` — Hierarquia de erros
+4. Modulos de source: `ibge.ts`, `bcb.ts`, `cgu.ts`, `tesouro.ts`, `ipea.ts`, `cnj.ts`
+5. Testes unitarios com respostas mockadas (vitest + msw)
+6. `examples/quickstart.ts`
 
 **Interface alvo**:
-```python
-from brazilvisible import ibge, bcb, cgu
+```typescript
+import { ibge, bcb, cgu, configure } from "brazilvisible";
 
-# IBGE — series agregadas
-pop = ibge.agregados(tabela=1301, periodos="2022", localidades="N1")
+// IBGE — series agregadas
+const pop = await ibge.agregados({ tabela: 1301, periodos: "2022", localidades: "N1" });
 
-# Banco Central — series temporais SGS
-selic = bcb.sgs(serie=11, inicio="2024-01-01", fim="2024-12-31")
-ipca = bcb.sgs(serie=433)
+// Banco Central — series temporais SGS
+const selic = await bcb.sgs({ serie: 11, inicio: "2024-01-01", fim: "2024-12-31" });
+const ipca = await bcb.sgs({ serie: 433 });
 
-# CGU Portal da Transparencia (requer API key)
-from brazilvisible import configure
-configure(api_keys={"cgu": "sua-chave-aqui"})
-# ou: export BV_CGU_API_KEY=sua-chave-aqui
+// CGU Portal da Transparencia (requer API key)
+configure({ apiKeys: { cgu: "sua-chave-aqui" } });
+// ou: export BV_CGU_API_KEY=sua-chave-aqui
 
-contratos = cgu.contratos(orgao="25000", ano=2024)
-sancionadas = cgu.ceis()
-servidores = cgu.servidores(orgao="25000")
+const contratos = await cgu.contratos({ orgao: "25000", ano: 2024 });
+const sancionadas = await cgu.ceis();
+const servidores = await cgu.servidores({ orgao: "25000" });
 ```
 
 **Criterios de pronto**:
-- [ ] `pip install brazilvisible` funciona
+- [ ] `npm install brazilvisible` funciona
 - [ ] Pelo menos 6 modulos de fonte funcionais (ibge, bcb, cgu, tesouro, ipea, cnj)
-- [ ] Tipagem completa (mypy strict passa)
+- [ ] Tipagem completa (tsc strict passa)
 - [ ] Testes com cobertura >80%
 - [ ] Documentacao basica no README
 
@@ -244,75 +254,84 @@ servidores = cgu.servidores(orgao="25000")
 **Objetivo**: Adicionar fontes que dependem de download CSV/ZIP.
 
 **Entregaveis**:
-1. `_download.py` — Download com progress, resume, descompressao ZIP/GZ
-2. `_cache.py` — Cache local de downloads (evitar re-download)
-3. Modulos: `tse.py`, `receita.py`, `inep.py`, `trabalho.py`, `previdencia.py`, `mercado.py`, `reguladoras.py`
+1. `download.ts` — Download com progress, resume, descompressao ZIP/GZ (Node streams)
+2. `cache.ts` — Cache local de downloads (evitar re-download)
+3. `parsers.ts` — CSV parser robusto (encoding latin1, separadores variados)
+4. Modulos: `tse.ts`, `receita.ts`, `inep.ts`, `trabalho.ts`, `previdencia.ts`, `mercado.ts`, `reguladoras.ts`
 
 **Interface alvo**:
-```python
-from brazilvisible import tse, receita
+```typescript
+import { tse, receita } from "brazilvisible";
 
-# TSE — candidaturas (baixa ZIP, descompacta, retorna DataFrame)
-candidatos = tse.candidaturas(ano=2022, estado="SP")
+// TSE — candidaturas (baixa ZIP, descompacta, retorna array tipado)
+const candidatos = await tse.candidaturas({ ano: 2022, estado: "SP" });
 
-# Receita Federal — CNPJ (arquivo grande, cache local)
-empresa = receita.cnpj("12345678000100")
-socios = receita.qsa(cnpj="12345678000100")
+// Receita Federal — CNPJ (arquivo grande, cache local)
+const empresa = await receita.cnpj("12345678000100");
+const socios = await receita.qsa({ cnpj: "12345678000100" });
 ```
 
 **Desafios**:
 - Arquivos da Receita Federal sao enormes (>1GB compactado, ~30GB descompactado)
-- Precisa de estrategia de cache e busca incremental
-- Download com progress bar (tqdm ou rich)
+- Precisa de estrategia de cache e streaming (Node.js streams)
+- Encoding ISO-8859-1 em muitos CSVs do governo
 
 ### Fase 3 — Fontes Especializadas
 
 **Objetivo**: DATASUS (FTP/DBC), geoespacial (WMS/WFS), e integracao com health check.
 
 **Entregaveis**:
-1. `datasus.py` — acesso FTP + conversao DBC->DataFrame
-2. `geo.py` — WMS/WFS com geopandas (extra opcional: `pip install brazilvisible[geo]`)
+1. `datasus.ts` — acesso FTP + conversao DBC (parser binario ou wrapper WASM)
+2. `geo.ts` — WMS/WFS (retorna GeoJSON)
 3. Integracao com `health.json` do Brazil Visible para status em tempo real
-
-**Extras opcionais (pyproject.toml)**:
-```toml
-[project.optional-dependencies]
-geo = ["geopandas>=0.14", "fiona>=1.9"]
-datasus = ["pysus>=0.2"]
-all = ["brazilvisible[geo,datasus]"]
-```
 
 ---
 
 ## Decisoes Tecnicas
 
 ### Dependencias Core
-- **httpx** — HTTP client async-ready (nao requests, que e sincrono-only)
-- **pandas** — DataFrames (dependencia principal)
-- **tenacity** — Retry com backoff (mais flexivel que httpx retry nativo)
+- **Nenhuma para HTTP** — `fetch` nativo (Node >=18, Deno, Bun, browsers)
+- **csv-parse** — Parser CSV robusto para Node.js (streaming, encoding)
+- Retry e rate limiting implementados internamente (logica simples, evita deps)
 
-### Dependencias Opcionais
-- **geopandas** + **fiona** — para fontes geoespaciais (extra `[geo]`)
-- **pysus** — para DATASUS DBC (extra `[datasus]`)
-- **tqdm** ou **rich** — progress bars para downloads grandes (extra `[cli]`)
+### Dependencias Dev
+- **typescript** >=5.5 — compilador
+- **tsup** — Bundler para libs (ESM + CJS + declarations)
+- **vitest** — Test runner (rapido, TS-nativo, compativel com Jest API)
+- **msw** — Mock Service Worker (intercepta fetch para testes)
+- **biome** — Linter + formatter (substitui ESLint + Prettier, rapido)
+
+### Compatibilidade de Runtime
+- **Node.js** >=18 (fetch nativo, AbortController, streams)
+- **Deno** — compativel via npm specifiers
+- **Bun** — compativel nativamente
+- **Browser** — fontes REST funcionam (download/FTP nao, por limitacao de plataforma)
+
+### Output Format
+- **ESM** — `import { bcb } from 'brazilvisible'`
+- **CJS** — `const { bcb } = require('brazilvisible')`
+- **Types** — `.d.ts` declarations incluidas
+- Gerado via `tsup` com `dts: true`
 
 ### Versionamento
 - SemVer (0.x enquanto a API nao estabilizar)
 - Changelog com conventional commits
 
 ### Testes
-- **pytest** + **respx** (mock HTTP para httpx)
+- **vitest** — runner principal
+- **msw** (Mock Service Worker) — intercepta `fetch` para testes unitarios
 - Testes unitarios: respostas mockadas, sem rede
-- Testes de integracao (marcados `@pytest.mark.integration`): chamadas reais, opcionais em CI
+- Testes de integracao (sufixo `.integration.test.ts`): chamadas reais, opcionais em CI
 
 ### CI/CD
-- GitHub Actions: lint (ruff), type check (mypy), test (pytest), build
-- Publish no PyPI via trusted publishers
+- GitHub Actions: lint (biome), type check (tsc), test (vitest), build (tsup)
+- Publish no npm via provenance (npm publish --provenance)
 
 ### Packaging
-- **hatchling** como build backend (moderno, rapido)
-- src layout (`src/brazilvisible/`)
-- Python >=3.10
+- **tsup** como bundler (rapido, zero-config para libs)
+- src layout (`src/`)
+- Dual package (ESM + CJS)
+- `"type": "module"` no package.json
 
 ---
 
@@ -322,7 +341,7 @@ O SDK e o site sao projetos complementares:
 
 | Aspecto | Site (brazil-visible) | SDK (brazil-visible-sdk) |
 |---------|----------------------|-------------------------|
-| **Linguagem** | TypeScript/Next.js | Python |
+| **Linguagem** | TypeScript/Next.js | TypeScript/Node.js |
 | **Proposito** | Documentacao para humanos | Acesso programatico |
 | **Dados** | Frontmatter YAML (92 fontes) | Codigo que consome as fontes |
 | **Health check** | Gera `health.json` a cada 6h | Consome `health.json` para status |
@@ -334,13 +353,14 @@ O frontmatter do site (`url_base`, `formato_dados`, `campos_chave`, `tipo_acesso
 
 ## Convencoes
 
-- **Lingua do codigo**: Ingles (nomes de funcoes, variaveis, docstrings)
+- **Lingua do codigo**: Ingles (nomes de funcoes, variaveis, JSDoc)
 - **Lingua da documentacao publica**: PT-BR (README, exemplos, mensagens de erro para usuario)
 - **Commits**: Conventional commits em ingles (`feat:`, `fix:`, `docs:`, `test:`)
 - **Branch**: `main` = releases, `develop` = desenvolvimento
-- **Code style**: Ruff (linter + formatter), 88 cols, double quotes
-- **Docstrings**: Google style
-- **Type hints**: Obrigatorios em toda funcao publica
+- **Code style**: Biome (linter + formatter), double quotes, semicolons, 2-space indent
+- **Docs em codigo**: JSDoc (nao TSDoc) — mais simples, suporte universal
+- **Type safety**: `strict: true` no tsconfig, sem `any` explicito
+- **Naming**: camelCase para funcoes/variaveis, PascalCase para tipos/classes, kebab-case para arquivos
 
 ---
 
@@ -364,7 +384,7 @@ O frontmatter do site (`url_base`, `formato_dados`, `campos_chave`, `tipo_acesso
 | `mercado` | CVM DFP/ITR, CVM Admin, CVM Fatos, B3 | Download CSV | Nao |
 | `transportes` | ANAC, PRF, DNIT, ANTT, DENATRAN | Misto | Nao |
 | `reguladoras` | ANATEL, ANEEL, ANP, ANVISA | Download CSV | Nao |
-| `geo` | IBGE Geo, CPRM, INCRA, INDE, INPE | WMS/WFS/Shapefile | Nao |
+| `geo` | IBGE Geo, CPRM, INCRA, INDE, INPE | WMS/WFS/GeoJSON | Nao |
 | `diarios` | DOU, DOEs | REST/Download | Nao |
 | `governamentais` | CADIN, SIAPE, SIORG | REST | Varia |
 | `seguranca` | SINESP | REST | Nao |
