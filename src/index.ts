@@ -60,12 +60,27 @@ export type {
   ServidoresParams,
   ServidorItem,
 } from "./sources/cgu";
+export { FileCache, getDefaultCache, resetDefaultCache } from "./cache";
+export type { CacheOptions, CacheEntry } from "./cache";
+export { download, extractZip, extractGzip } from "./download";
+export type { DownloadOptions, DownloadProgress } from "./download";
+export { parseCsvFile, parseCsvString } from "./parsers";
+export type { CsvParseOptions } from "./parsers";
+export { TseSource } from "./sources/tse";
+export type {
+  TseDownloadParams,
+  Candidatura,
+  BemCandidato,
+  Filiado,
+  ResultadoVotacao,
+} from "./sources/tse";
 
 import { BcbSource } from "./sources/bcb";
 import { CguSource } from "./sources/cgu";
 import { IbgeSource } from "./sources/ibge";
 import { IpeaSource } from "./sources/ipea";
 import { TesouroSource } from "./sources/tesouro";
+import { TseSource } from "./sources/tse";
 
 /** Pre-instantiated BCB source for convenience. */
 export const bcb = new BcbSource();
@@ -81,3 +96,6 @@ export const ipea = new IpeaSource();
 
 /** Pre-instantiated CGU source for convenience. Requires API key configuration. */
 export const cgu = new CguSource();
+
+/** Pre-instantiated TSE source for convenience. Downloads data on first call. */
+export const tse = new TseSource();

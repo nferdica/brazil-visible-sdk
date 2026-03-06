@@ -42,3 +42,11 @@ export type {
   ServidoresParams,
   ServidorItem,
 } from "./cgu";
+export { TseSource } from "./tse";
+export type {
+  TseDownloadParams,
+  Candidatura,
+  BemCandidato,
+  Filiado,
+  ResultadoVotacao,
+} from "./tse";
