@@ -1,18 +1,8 @@
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-*.so
-*.egg-info/
-*.egg
-dist/
-build/
-.eggs/
+# Dependencies
+node_modules/
 
-# Virtual environments
-.venv/
-venv/
-env/
+# Build output
+dist/
 
 # IDE
 .vscode/
@@ -21,12 +11,7 @@ env/
 *.swo
 
 # Testing
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-htmlcov/
-.coverage
-coverage.xml
+coverage/
 
 # OS
 .DS_Store
