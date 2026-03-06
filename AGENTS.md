@@ -1,4 +1,4 @@
-# br/acc SDK — AGENTS.md
+# Brazil Visible SDK — AGENTS.md
 
 > Este documento e o briefing completo para implementacao do SDK. Qualquer sessao Claude Code neste repositorio deve comecar lendo este arquivo.
 
@@ -8,7 +8,7 @@ SDK TypeScript unificado para acesso a 93+ fontes de dados publicos brasileiros.
 
 **Proposta de valor**: Ninguem unificou o acesso a dados publicos brasileiros num unico pacote. Existem SDKs isolados por orgao (python-bcb, pysus, sidra), mas nenhum em TypeScript/JavaScript que cubra o ecossistema inteiro. Este SDK resolve isso — e alcanca o maior ecossistema de desenvolvedores do mundo.
 
-**Repositorio irmao**: [Brazilian Accelerationism](https://github.com/nferdica/brazil-visible) — catalogo de documentacao com 92 APIs mapeadas em frontmatter YAML estruturado (url_base, formato_dados, campos_chave, tipo_acesso, autenticacao). Esse frontmatter e a base de configuracao do SDK.
+**Repositorio irmao**: [Brazil Visible](https://github.com/nferdica/brazil-visible) — catalogo de documentacao com 92 APIs mapeadas em frontmatter YAML estruturado (url_base, formato_dados, campos_chave, tipo_acesso, autenticacao). Esse frontmatter e a base de configuracao do SDK.
 
 ---
 
@@ -16,7 +16,7 @@ SDK TypeScript unificado para acesso a 93+ fontes de dados publicos brasileiros.
 
 1. **Jornalistas de dados** — Abraji, Agencia Publica, Fiquem Sabendo. Querem cruzar bases sem perder horas com boilerplate.
 2. **Pesquisadores academicos** — ciencia politica, economia, saude publica. Scripts rapidos em Node/Deno/Bun.
-3. **Desenvolvedores civicos** — comunidade br/acc, civic hackers. Querem construir ferramentas de fiscalizacao com tipagem forte e ecossistema npm.
+3. **Desenvolvedores civicos** — civic hackers. Querem construir ferramentas de fiscalizacao com tipagem forte e ecossistema npm.
 4. **Desenvolvedores fullstack** — ja usam TypeScript no front e no back, agora podem acessar dados publicos nativamente.
 
 ---
@@ -25,7 +25,7 @@ SDK TypeScript unificado para acesso a 93+ fontes de dados publicos brasileiros.
 
 ### Principios
 
-- **Uma interface, muitas fontes**: `import { ibge, bcb } from '@bracc/sdk'` — independente se a fonte e REST, CSV ou FTP
+- **Uma interface, muitas fontes**: `import { ibge, bcb } from '@brazilvisible/sdk'` — independente se a fonte e REST, CSV ou FTP
 - **Typed-first**: Toda resposta retorna arrays tipados `T[]` com interfaces completas para cada fonte
 - **Zero config para 80% dos casos**: 80% das APIs nao exigem autenticacao
 - **Zero deps HTTP**: Usa `fetch` nativo (Node >=18) — sem axios, got ou undici no core
@@ -122,7 +122,7 @@ export interface BVClientConfig {
 
 export class BVClient {
   static readonly DEFAULT_HEADERS: Record<string, string> = {
-    "User-Agent": "bracc-sdk/0.1 (https://bracc.co)",
+    "User-Agent": "brazilvisible-sdk/0.1 (https://brazilvisible.org)",
     "Accept": "application/json, text/csv, */*",
   };
 
@@ -224,7 +224,7 @@ O SDK baixa o arquivo, descompacta, parseia CSV e retorna array tipado.
 
 **Interface alvo**:
 ```typescript
-import { ibge, bcb, cgu, configure } from "@bracc/sdk";
+import { ibge, bcb, cgu, configure } from "@brazilvisible/sdk";
 
 // IBGE — series agregadas
 const pop = await ibge.agregados({ tabela: 1301, periodos: "2022", localidades: "N1" });
@@ -243,7 +243,7 @@ const servidores = await cgu.servidores({ orgao: "25000" });
 ```
 
 **Criterios de pronto**:
-- [ ] `npm install @bracc/sdk` funciona
+- [ ] `npm install @brazilvisible/sdk` funciona
 - [ ] Pelo menos 6 modulos de fonte funcionais (ibge, bcb, cgu, tesouro, ipea, cnj)
 - [ ] Tipagem completa (tsc strict passa)
 - [ ] Testes com cobertura >80%
@@ -261,7 +261,7 @@ const servidores = await cgu.servidores({ orgao: "25000" });
 
 **Interface alvo**:
 ```typescript
-import { tse, receita } from "@bracc/sdk";
+import { tse, receita } from "@brazilvisible/sdk";
 
 // TSE — candidaturas (baixa ZIP, descompacta, retorna array tipado)
 const candidatos = await tse.candidaturas({ ano: 2022, estado: "SP" });
@@ -283,7 +283,7 @@ const socios = await receita.qsa({ cnpj: "12345678000100" });
 **Entregaveis**:
 1. `datasus.ts` — acesso FTP + conversao DBC (parser binario ou wrapper WASM)
 2. `geo.ts` — WMS/WFS (retorna GeoJSON)
-3. Integracao com `health.json` do br/acc para status em tempo real
+3. Integracao com `health.json` do Brazil Visible para status em tempo real
 
 ---
 
@@ -308,8 +308,8 @@ const socios = await receita.qsa({ cnpj: "12345678000100" });
 - **Browser** — fontes REST funcionam (download/FTP nao, por limitacao de plataforma)
 
 ### Output Format
-- **ESM** — `import { bcb } from '@bracc/sdk'`
-- **CJS** — `const { bcb } = require('@bracc/sdk')`
+- **ESM** — `import { bcb } from '@brazilvisible/sdk'`
+- **CJS** — `const { bcb } = require('@brazilvisible/sdk')`
 - **Types** — `.d.ts` declarations incluidas
 - Gerado via `tsup` com `dts: true`
 
@@ -335,11 +335,11 @@ const socios = await receita.qsa({ cnpj: "12345678000100" });
 
 ---
 
-## Relacao com br/acc (site)
+## Relacao com Brazil Visible (site)
 
 O SDK e o site sao projetos complementares:
 
-| Aspecto | Site (br/acc) | SDK (@bracc/sdk) |
+| Aspecto | Site (Brazil Visible) | SDK (@brazilvisible/sdk) |
 |---------|----------------------|-------------------------|
 | **Linguagem** | TypeScript/Next.js | TypeScript/Node.js |
 | **Proposito** | Documentacao para humanos | Acesso programatico |

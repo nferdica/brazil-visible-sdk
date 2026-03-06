@@ -14,7 +14,7 @@ export interface CacheEntry {
   sizeBytes: number;
 }
 
-const DEFAULT_CACHE_DIR = join(homedir(), ".bracc", "cache");
+const DEFAULT_CACHE_DIR = join(homedir(), ".brazilvisible", "cache");
 const DEFAULT_TTL_MS = 24 * 60 * 60 * 1000; // 24 hours
 
 export class FileCache {
