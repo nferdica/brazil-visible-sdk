@@ -1,4 +1,4 @@
-# Brazil Visible SDK
+# br/acc SDK
 
 SDK TypeScript unificado para acesso a **93+ fontes de dados publicos brasileiros**.
 
@@ -17,11 +17,9 @@ Compativel com **Node.js >=18**, **Deno**, **Bun** e **browsers** (fontes REST).
 ```typescript
 import { bcb, ibge } from "@bracc/sdk";
 
-// Banco Central — serie temporal SGS
 const selic = await bcb.sgs({ serie: 11, inicio: "2024-01-01", fim: "2024-12-31" });
 console.log(selic);
 
-// IBGE — dados agregados
 const populacao = await ibge.agregados({ tabela: 1301, periodos: "2022", localidades: "N1" });
 console.log(populacao);
 ```
@@ -32,7 +30,6 @@ console.log(populacao);
 import { cgu, configure } from "@bracc/sdk";
 
 configure({ apiKeys: { cgu: "sua-chave-aqui" } });
-// ou defina a env var: export BV_CGU_API_KEY=sua-chave-aqui
 
 const contratos = await cgu.contratos({ orgao: "25000", ano: 2024 });
 const sancionadas = await cgu.ceis();
@@ -43,11 +40,9 @@ const sancionadas = await cgu.ceis();
 ```typescript
 import { tse, receita } from "@bracc/sdk";
 
-// TSE — candidaturas (baixa ZIP, descompacta, retorna array tipado)
 const candidatos = await tse.candidaturas({ ano: 2022, estado: "SP" });
 console.log(`${candidatos.length} candidaturas em SP`);
 
-// Receita Federal — empresas por CNPJ
 const empresas = await receita.empresas({ chunk: 0 });
 ```
 
@@ -56,7 +51,6 @@ const empresas = await receita.empresas({ chunk: 0 });
 ```typescript
 import { cgu } from "@bracc/sdk";
 
-// Empresas sancionadas que ainda vencem licitacoes
 const sancionadas = await cgu.ceis();
 const contratos = await cgu.contratos({ ano: 2024 });
 
@@ -92,7 +86,7 @@ console.log(`${irregulares.length} contratos com empresas sancionadas`);
 | **TSE** | `tse` | `candidaturas`, `bensCandidatos`, `resultados`, `filiados` | ZIP/CSV |
 | **Receita** | `receita` | `empresas`, `estabelecimentos`, `socios`, `simplesNacional` | ZIP/CSV |
 | **Mercado/CVM** | `mercado` | `dfp`, `itr`, `ciasAbertas`, `fundosInvestimento` | ZIP/CSV |
-| **INEP** | `inepData` | `enem`, `censoEscolar`, `censoSuperior` | ZIP/CSV |
+| **INEP** | `inep` | `enem`, `censoEscolar`, `censoSuperior` | ZIP/CSV |
 | **Trabalho** | `trabalho` | `caged`, `rais` | ZIP/CSV |
 | **Previdencia** | `previdencia` | `beneficios`, `fundosPensao` | CSV |
 | **Reguladoras** | `reguladoras` | `anatel`, `aneel`, `anp`, `anvisa` | CSV |
@@ -112,10 +106,10 @@ console.log(`${irregulares.length} contratos com empresas sancionadas`);
 import { configure } from "@bracc/sdk";
 
 configure({
-  timeout: 60000,        // timeout HTTP em ms (default: 30000)
-  maxRetries: 5,         // tentativas de retry (default: 3)
+  timeout: 60000,
+  maxRetries: 5,
   apiKeys: {
-    cgu: "sua-chave",    // ou env var BV_CGU_API_KEY
+    cgu: "sua-chave",
   },
 });
 ```
@@ -126,15 +120,15 @@ configure({
 git clone git@github.com:brazilvisible/brazil-visible-sdk.git
 cd brazil-visible-sdk
 npm install
-npm run build       # ESM + CJS + .d.ts
-npm test            # 179 testes
-npm run lint        # biome
-npm run typecheck   # tsc --noEmit
+npm run build
+npm test
+npm run lint
+npm run typecheck
 ```
 
 ## Projeto irmao
 
-Este SDK e a camada programatica do [Brazil Visible](https://brazilvisible.org) — catalogo de documentacao com 93+ fontes de dados publicos brasileiros.
+Este SDK e a camada programatica do [Brazilian Accelerationism](https://bracc.co) — catalogo de documentacao com 93+ fontes de dados publicos brasileiros.
 
 ## Licenca
 

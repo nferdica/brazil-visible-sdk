@@ -42,7 +42,7 @@
     "tse",
     "receita-federal"
   ],
-  "author": "Brazil Visible <contato@brazilvisible.org>",
+  "author": "Brazilian Accelerationism <contato@bracc.co>",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -51,7 +51,7 @@
   "bugs": {
     "url": "https://github.com/brazilvisible/brazil-visible-sdk/issues"
   },
-  "homepage": "https://brazilvisible.org",
+  "homepage": "https://bracc.co",
   "engines": {
     "node": ">=18"
   },

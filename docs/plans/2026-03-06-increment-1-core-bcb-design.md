@@ -66,7 +66,7 @@ All errors include `source: string` to identify origin (e.g., `"bcb"`).
 ## Target Interface
 
 ```typescript
-import { bcb, configure } from "brazilvisible";
+import { bcb, configure } from "@bracc/sdk";
 
 // SGS time series
 const selic = await bcb.sgs({ serie: 11, dataInicial: "2024-01-01", dataFinal: "2024-01-31" });
