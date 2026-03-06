@@ -190,6 +190,96 @@ describe("CguSource", () => {
     });
   });
 
+  describe("ceaf", () => {
+    it("returns data with auth header", async () => {
+      server.use(
+        http.get(`${BASE_URL}/ceaf`, ({ request }) => {
+          expect(request.headers.get("chave-api-dados")).toBe("test-key");
+          return HttpResponse.json([
+            {
+              id: 300,
+              cpfSancionado: "***111222**",
+              nomeSancionado: "Servidor Sancionado",
+              orgaoLotacao: "Ministerio da Saude",
+              dataPublicacao: "2024-01-15",
+              tipoSancao: "Demissao",
+              fundamentacaoLegal: "Art. 132, I",
+            },
+          ]);
+        }),
+      );
+
+      const result = await cgu.ceaf();
+      expect(result).toHaveLength(1);
+      expect(result[0]?.nomeSancionado).toBe("Servidor Sancionado");
+      expect(result[0]?.tipoSancao).toBe("Demissao");
+    });
+  });
+
+  describe("emendas", () => {
+    it("returns data with params", async () => {
+      server.use(
+        http.get(`${BASE_URL}/emendas`, ({ request }) => {
+          expect(request.headers.get("chave-api-dados")).toBe("test-key");
+          const url = new URL(request.url);
+          expect(url.searchParams.get("ano")).toBe("2024");
+          return HttpResponse.json([
+            {
+              id: 400,
+              codigoEmenda: "12345",
+              nomeAutor: "Deputado Teste",
+              tipoEmenda: "Individual",
+              localidadeDoGasto: "Sao Paulo - SP",
+              funcao: "Saude",
+              subfuncao: "Atencao Basica",
+              valorEmpenhado: 500000.0,
+              valorPago: 250000.0,
+            },
+          ]);
+        }),
+      );
+
+      const result = await cgu.emendas({ ano: 2024 });
+      expect(result).toHaveLength(1);
+      expect(result[0]?.nomeAutor).toBe("Deputado Teste");
+      expect(result[0]?.valorEmpenhado).toBe(500000.0);
+    });
+  });
+
+  describe("viagens", () => {
+    it("returns data with params", async () => {
+      server.use(
+        http.get(`${BASE_URL}/viagens`, ({ request }) => {
+          expect(request.headers.get("chave-api-dados")).toBe("test-key");
+          const url = new URL(request.url);
+          expect(url.searchParams.get("codigoOrgao")).toBe("25000");
+          return HttpResponse.json([
+            {
+              id: 500,
+              codigoOrgao: "25000",
+              nomeOrgao: "Ministerio da Saude",
+              cpfBeneficiario: "***333444**",
+              nomeBeneficiario: "Viajante Teste",
+              dataIda: "2024-03-01",
+              dataRetorno: "2024-03-05",
+              destino: "Brasilia/DF",
+              motivo: "Reuniao tecnica",
+              valorDiarias: 2500.0,
+              valorPassagens: 1800.0,
+              valorOutros: 200.0,
+            },
+          ]);
+        }),
+      );
+
+      const result = await cgu.viagens({ codigoOrgao: "25000" });
+      expect(result).toHaveLength(1);
+      expect(result[0]?.nomeBeneficiario).toBe("Viajante Teste");
+      expect(result[0]?.destino).toBe("Brasilia/DF");
+      expect(result[0]?.valorDiarias).toBe(2500.0);
+    });
+  });
+
   describe("auth validation", () => {
     it("throws BVValidationError when no API key configured", async () => {
       resetConfig();

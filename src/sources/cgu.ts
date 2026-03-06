@@ -107,6 +107,68 @@ export interface ServidorItem {
   situacaoVinculo: string;
 }
 
+// ── CEAF Types ───────────────────────────────────────────────────
+
+export interface CeafParams extends CguPaginationParams {
+  cpfSancionado?: string;
+  nomeSancionado?: string;
+  orgaoLotacao?: string;
+}
+
+export interface CeafItem {
+  id: number;
+  cpfSancionado: string;
+  nomeSancionado: string;
+  orgaoLotacao: string;
+  dataPublicacao: string;
+  tipoSancao: string;
+  fundamentacaoLegal: string;
+}
+
+// ── Emendas Types ────────────────────────────────────────────────
+
+export interface EmendasParams extends CguPaginationParams {
+  codigoEmenda?: string;
+  nomeAutor?: string;
+  ano?: number;
+}
+
+export interface EmendaItem {
+  id: number;
+  codigoEmenda: string;
+  nomeAutor: string;
+  tipoEmenda: string;
+  localidadeDoGasto: string;
+  funcao: string;
+  subfuncao: string;
+  valorEmpenhado: number;
+  valorPago: number;
+}
+
+// ── Viagens Types ────────────────────────────────────────────────
+
+export interface ViagensParams extends CguPaginationParams {
+  codigoOrgao?: string;
+  cpfBeneficiario?: string;
+  dataIdaDe?: string;
+  dataIdaAte?: string;
+}
+
+export interface ViagemItem {
+  id: number;
+  codigoOrgao: string;
+  nomeOrgao: string;
+  cpfBeneficiario: string;
+  nomeBeneficiario: string;
+  dataIda: string;
+  dataRetorno: string;
+  destino: string;
+  motivo: string;
+  valorDiarias: number;
+  valorPassagens: number;
+  valorOutros: number;
+}
+
 // ── Source ─────────────────────────────────────────────────────────
 
 export class CguSource extends Source {
@@ -190,6 +252,43 @@ export class CguSource extends Source {
         ...this.paginationParams(params),
         orgaoServidores: params?.orgaoServidores,
         orgaoExercicio: params?.orgaoExercicio,
+      },
+    });
+  }
+
+  async ceaf(params?: CeafParams): Promise<CeafItem[]> {
+    return this.client.get<CeafItem[]>(`${this.baseUrl}/ceaf`, {
+      headers: this.getAuthHeaders(),
+      params: {
+        ...this.paginationParams(params),
+        cpfSancionado: params?.cpfSancionado,
+        nomeSancionado: params?.nomeSancionado,
+        orgaoLotacao: params?.orgaoLotacao,
+      },
+    });
+  }
+
+  async emendas(params?: EmendasParams): Promise<EmendaItem[]> {
+    return this.client.get<EmendaItem[]>(`${this.baseUrl}/emendas`, {
+      headers: this.getAuthHeaders(),
+      params: {
+        ...this.paginationParams(params),
+        codigoEmenda: params?.codigoEmenda,
+        nomeAutor: params?.nomeAutor,
+        ano: params?.ano,
+      },
+    });
+  }
+
+  async viagens(params?: ViagensParams): Promise<ViagemItem[]> {
+    return this.client.get<ViagemItem[]>(`${this.baseUrl}/viagens`, {
+      headers: this.getAuthHeaders(),
+      params: {
+        ...this.paginationParams(params),
+        codigoOrgao: params?.codigoOrgao,
+        cpfBeneficiario: params?.cpfBeneficiario,
+        dataIdaDe: params?.dataIdaDe,
+        dataIdaAte: params?.dataIdaAte,
       },
     });
   }

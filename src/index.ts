@@ -104,15 +104,40 @@ export type {
   FundoInvestimento,
 } from "./sources/mercado";
 
+export * from "./sources/previdencia";
+export * from "./sources/reguladoras";
+export * from "./sources/seguranca";
+export * from "./sources/portais";
+export * from "./sources/ambiente";
+export * from "./sources/transportes";
+export * from "./sources/diarios";
+export * from "./sources/governamentais";
+export * from "./sources/outros";
+export * from "./sources/cnj";
+export * from "./sources/datasus";
+export * from "./sources/geo";
+
+import { AmbienteSource } from "./sources/ambiente";
 import { BcbSource } from "./sources/bcb";
 import { CguSource } from "./sources/cgu";
+import { CnjSource } from "./sources/cnj";
+import { DataSusSource } from "./sources/datasus";
+import { DiariosSource } from "./sources/diarios";
+import { GeoSource } from "./sources/geo";
+import { GovernamentaisSource } from "./sources/governamentais";
 import { IbgeSource } from "./sources/ibge";
 import { InepSource } from "./sources/inep";
 import { IpeaSource } from "./sources/ipea";
 import { MercadoSource } from "./sources/mercado";
+import { OutrosSource } from "./sources/outros";
+import { PortaisSource } from "./sources/portais";
+import { PrevidenciaSource } from "./sources/previdencia";
 import { ReceitaSource } from "./sources/receita";
+import { ReguladorasSource } from "./sources/reguladoras";
+import { SegurancaSource } from "./sources/seguranca";
 import { TesouroSource } from "./sources/tesouro";
 import { TrabalhoSource } from "./sources/trabalho";
+import { TransportesSource } from "./sources/transportes";
 import { TseSource } from "./sources/tse";
 
 /** Pre-instantiated BCB source for convenience. */
@@ -144,3 +169,16 @@ export const trabalho = new TrabalhoSource();
 
 /** Pre-instantiated CVM/Mercado source for convenience. Downloads data on first call. */
 export const mercado = new MercadoSource();
+
+export const previdencia = new PrevidenciaSource();
+export const reguladoras = new ReguladorasSource();
+export const seguranca = new SegurancaSource();
+export const portais = new PortaisSource();
+export const ambiente = new AmbienteSource();
+export const transportes = new TransportesSource();
+export const diarios = new DiariosSource();
+export const governamentais = new GovernamentaisSource();
+export const outros = new OutrosSource();
+export const cnj = new CnjSource();
+export const datasus = new DataSusSource();
+export const geo = new GeoSource();
