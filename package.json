@@ -40,10 +40,18 @@
     "ibge",
     "datasus",
     "tse",
-    "receita-federal"
+    "receita-federal",
+    "sdk",
+    "typescript",
+    "dados-publicos",
+    "brazilian-government"
   ],
   "author": "Brazilian Accelerationism <contato@bracc.co>",
   "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/brazilvisible/brazil-visible-sdk.git"
