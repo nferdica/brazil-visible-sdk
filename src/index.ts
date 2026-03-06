@@ -46,8 +46,23 @@ export type {
   IpeaMetadadosParams,
   IpeaMetadado,
 } from "./sources/ipea";
+export { CguSource } from "./sources/cgu";
+export type {
+  CguPaginationParams,
+  CeisParams,
+  CeisItem,
+  CnepParams,
+  CnepItem,
+  CepimParams,
+  CepimItem,
+  ContratosParams,
+  ContratoItem,
+  ServidoresParams,
+  ServidorItem,
+} from "./sources/cgu";
 
 import { BcbSource } from "./sources/bcb";
+import { CguSource } from "./sources/cgu";
 import { IbgeSource } from "./sources/ibge";
 import { IpeaSource } from "./sources/ipea";
 import { TesouroSource } from "./sources/tesouro";
@@ -63,3 +78,6 @@ export const tesouro = new TesouroSource();
 
 /** Pre-instantiated IPEA source for convenience. */
 export const ipea = new IpeaSource();
+
+/** Pre-instantiated CGU source for convenience. Requires API key configuration. */
+export const cgu = new CguSource();

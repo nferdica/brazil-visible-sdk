@@ -125,48 +125,72 @@ export class CguSource extends Source {
     return { "chave-api-dados": apiKey };
   }
 
-  private buildParams(
-    params?: CguPaginationParams & Record<string, string | number | undefined>,
+  private paginationParams(
+    params?: CguPaginationParams,
   ): Record<string, string | number | undefined> {
     return {
       pagina: params?.pagina ?? 1,
       tamanhoPagina: params?.tamanhoPagina ?? 15,
-      ...params,
     };
   }
 
   async ceis(params?: CeisParams): Promise<CeisItem[]> {
     return this.client.get<CeisItem[]>(`${this.baseUrl}/ceis`, {
       headers: this.getAuthHeaders(),
-      params: this.buildParams(params),
+      params: {
+        ...this.paginationParams(params),
+        cnpjSancionado: params?.cnpjSancionado,
+        nomeSancionado: params?.nomeSancionado,
+        orgaoSancionador: params?.orgaoSancionador,
+      },
     });
   }
 
   async cnep(params?: CnepParams): Promise<CnepItem[]> {
     return this.client.get<CnepItem[]>(`${this.baseUrl}/cnep`, {
       headers: this.getAuthHeaders(),
-      params: this.buildParams(params),
+      params: {
+        ...this.paginationParams(params),
+        cnpjSancionado: params?.cnpjSancionado,
+        nomeSancionado: params?.nomeSancionado,
+        orgaoSancionador: params?.orgaoSancionador,
+      },
     });
   }
 
   async cepim(params?: CepimParams): Promise<CepimItem[]> {
     return this.client.get<CepimItem[]>(`${this.baseUrl}/cepim`, {
       headers: this.getAuthHeaders(),
-      params: this.buildParams(params),
+      params: {
+        ...this.paginationParams(params),
+        cnpjSancionado: params?.cnpjSancionado,
+        nomeSancionado: params?.nomeSancionado,
+        orgaoSuperior: params?.orgaoSuperior,
+      },
     });
   }
 
   async contratos(params?: ContratosParams): Promise<ContratoItem[]> {
     return this.client.get<ContratoItem[]>(`${this.baseUrl}/contratos`, {
       headers: this.getAuthHeaders(),
-      params: this.buildParams(params),
+      params: {
+        ...this.paginationParams(params),
+        codigoOrgao: params?.codigoOrgao,
+        dataInicial: params?.dataInicial,
+        dataFinal: params?.dataFinal,
+        cpfCnpj: params?.cpfCnpj,
+      },
     });
   }
 
   async servidores(params?: ServidoresParams): Promise<ServidorItem[]> {
     return this.client.get<ServidorItem[]>(`${this.baseUrl}/servidores`, {
       headers: this.getAuthHeaders(),
-      params: this.buildParams(params),
+      params: {
+        ...this.paginationParams(params),
+        orgaoServidores: params?.orgaoServidores,
+        orgaoExercicio: params?.orgaoExercicio,
+      },
     });
   }
 }
