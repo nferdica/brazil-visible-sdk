@@ -1,5 +1,5 @@
 import { BVValidationError } from "../errors";
-import { Source, type SourceConfig } from "./base";
+import { Source } from "./base";
 
 export interface SgsParams {
   serie: number;
