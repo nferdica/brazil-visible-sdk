@@ -28,3 +28,17 @@ export type {
   IpeaMetadadosParams,
   IpeaMetadado,
 } from "./ipea";
+export { CguSource } from "./cgu";
+export type {
+  CguPaginationParams,
+  CeisParams,
+  CeisItem,
+  CnepParams,
+  CnepItem,
+  CepimParams,
+  CepimItem,
+  ContratosParams,
+  ContratoItem,
+  ServidoresParams,
+  ServidorItem,
+} from "./cgu";
