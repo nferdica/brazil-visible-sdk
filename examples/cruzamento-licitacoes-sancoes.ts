@@ -1,20 +1,6 @@
-/**
- * Brazil Visible SDK — Cruzamento: licitacoes x sancoes
- *
- * Identifica empresas sancionadas (CEIS) que possuem contratos ativos
- * com o governo federal. Util para fiscalizacao e jornalismo de dados.
- *
- * Requisitos:
- *   - API key da CGU: https://portaldatransparencia.gov.br/api-de-dados
- *   - Defina a env var: export BV_CGU_API_KEY=sua-chave-aqui
- *
- * Execute com: npx tsx examples/cruzamento-licitacoes-sancoes.ts
- */
-
 import { cgu, configure } from "@bracc/sdk";
 
 async function main() {
-  // Configura chave via env var (ou passe diretamente)
   const apiKey = process.env.BV_CGU_API_KEY;
   if (!apiKey) {
     console.error("Defina BV_CGU_API_KEY para executar este exemplo.");
@@ -32,7 +18,6 @@ async function main() {
   const contratos = await cgu.contratos({ pagina: 1 });
   console.log(`  ${contratos.length} contratos encontrados`);
 
-  // Cruzamento: CNPJs sancionados presentes em contratos
   const cnpjsSancionados = new Set(
     sancionadas.map((s) => s.cnpj).filter(Boolean),
   );

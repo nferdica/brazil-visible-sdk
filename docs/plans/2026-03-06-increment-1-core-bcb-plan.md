@@ -457,7 +457,7 @@ describe("BVClient", () => {
 
       const client = new BVClient();
       const result = await client.get<{ userAgent: string; accept: string }>(`${TEST_URL}/data`);
-      expect(result.userAgent).toContain("BrazilVisibleSDK");
+      expect(result.userAgent).toContain("bracc-sdk");
       expect(result.accept).toContain("application/json");
     });
 
@@ -542,7 +542,7 @@ export interface BVClientOptions {
 }
 
 const DEFAULT_HEADERS: Record<string, string> = {
-  "User-Agent": "BrazilVisibleSDK/0.1 (https://brazilvisible.org)",
+  "User-Agent": "bracc-sdk/0.1 (https://bracc.co)",
   Accept: "application/json, text/csv, */*",
 };
 

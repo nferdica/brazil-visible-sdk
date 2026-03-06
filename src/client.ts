@@ -9,7 +9,7 @@ export interface BVClientOptions {
 }
 
 const DEFAULT_HEADERS: Record<string, string> = {
-  "User-Agent": "BrazilVisible/0.1 (https://brazilvisible.org)",
+  "User-Agent": "bracc-sdk/0.1 (https://bracc.co)",
   Accept: "application/json, text/csv, */*",
 };
 
