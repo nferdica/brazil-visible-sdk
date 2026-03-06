@@ -1,9 +1,12 @@
 export const VERSION = "0.1.0";
 
-export { configure, getConfig } from "./config";
-export type { BVConfig } from "./config";
+export { configure, getConfig, resetConfig } from "./config";
+export type { BVConfig, ResolvedConfig } from "./config";
 export { BVClient } from "./client";
 export type { BVClientOptions } from "./client";
+export type { RequestOptions } from "./types";
+export { Source } from "./sources/base";
+export type { SourceConfig } from "./sources/base";
 export { BVError, BVHttpError, BVTimeoutError, BVValidationError } from "./errors";
 export { BcbSource } from "./sources/bcb";
 export type {
@@ -62,6 +65,12 @@ export type {
   ContratoItem,
   ServidoresParams,
   ServidorItem,
+  CeafParams,
+  CeafItem,
+  EmendasParams,
+  EmendaItem,
+  ViagensParams,
+  ViagemItem,
 } from "./sources/cgu";
 export { FileCache, getDefaultCache, resetDefaultCache } from "./cache";
 export type { CacheOptions, CacheEntry } from "./cache";

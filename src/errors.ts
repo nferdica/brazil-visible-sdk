@@ -5,6 +5,7 @@ export class BVError extends Error {
     super(message);
     this.name = "BVError";
     this.source = source;
+    Object.setPrototypeOf(this, new.target.prototype);
   }
 }
 
@@ -17,6 +18,7 @@ export class BVHttpError extends BVError {
     this.name = "BVHttpError";
     this.statusCode = statusCode;
     this.responseBody = responseBody;
+    Object.setPrototypeOf(this, new.target.prototype);
   }
 }
 
@@ -27,6 +29,7 @@ export class BVTimeoutError extends BVError {
     super(`Request timed out after ${timeoutMs}ms`, source);
     this.name = "BVTimeoutError";
     this.timeoutMs = timeoutMs;
+    Object.setPrototypeOf(this, new.target.prototype);
   }
 }
 
@@ -39,5 +42,6 @@ export class BVValidationError extends BVError {
     this.name = "BVValidationError";
     this.field = field;
     this.constraint = constraint;
+    Object.setPrototypeOf(this, new.target.prototype);
   }
 }
