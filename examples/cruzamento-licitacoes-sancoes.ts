@@ -11,7 +11,7 @@
  * Execute com: npx tsx examples/cruzamento-licitacoes-sancoes.ts
  */
 
-import { cgu, configure } from "brazilvisible";
+import { cgu, configure } from "brazil-visible";
 
 async function main() {
   // Configura chave via env var (ou passe diretamente)

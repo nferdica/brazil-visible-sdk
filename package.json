@@ -1,5 +1,5 @@
 {
-  "name": "brazilvisible",
+  "name": "brazil-visible",
   "version": "0.1.0",
   "description": "SDK TypeScript unificado para acesso a 93+ fontes de dados publicos brasileiros",
   "type": "module",
