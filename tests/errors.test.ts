@@ -1,10 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  BVError,
-  BVHttpError,
-  BVTimeoutError,
-  BVValidationError,
-} from "../src/errors";
+import { BVError, BVHttpError, BVTimeoutError, BVValidationError } from "../src/errors";
 
 describe("BVError", () => {
   it("is an instance of Error", () => {
