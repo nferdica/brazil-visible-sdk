@@ -26,6 +26,7 @@ export class FileCache {
     this.ttlMs = options?.ttlMs ?? DEFAULT_TTL_MS;
   }
 
+  /** Retrieve a cached file path by key, or null if expired/missing. */
   async get(key: string): Promise<string | null> {
     const metaPath = this.metaPath(key);
 
@@ -52,6 +53,7 @@ export class FileCache {
     }
   }
 
+  /** Store a file or directory in the cache under the given key. */
   async put(key: string, filePath: string): Promise<string> {
     const entryPath = this.entryPath(key);
     const metaPath = this.metaPath(key);
@@ -88,10 +90,12 @@ export class FileCache {
     return entryPath;
   }
 
+  /** Check whether a valid (non-expired) cache entry exists for the given key. */
   async has(key: string): Promise<boolean> {
     return (await this.get(key)) !== null;
   }
 
+  /** Delete a specific cache entry by key. */
   async delete(key: string): Promise<void> {
     const dir = this.keyDir(key);
     if (existsSync(dir)) {
@@ -99,12 +103,14 @@ export class FileCache {
     }
   }
 
+  /** Clear all cached entries by removing the entire cache directory. */
   async clear(): Promise<void> {
     if (existsSync(this.cacheDir)) {
       await rm(this.cacheDir, { recursive: true });
     }
   }
 
+  /** Return the absolute path to the cache directory. */
   getCacheDir(): string {
     return this.cacheDir;
   }

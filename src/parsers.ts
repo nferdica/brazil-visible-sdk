@@ -21,6 +21,7 @@ const DEFAULT_CSV_OPTIONS: CsvParseOptions = {
   rtrim: true,
 };
 
+/** Parse a CSV file from disk into an array of typed records. */
 export async function parseCsvFile<T extends Record<string, string>>(
   filePath: string,
   options?: CsvParseOptions,
@@ -49,6 +50,7 @@ export async function parseCsvFile<T extends Record<string, string>>(
   return records;
 }
 
+/** Parse a CSV string into an array of typed records. */
 export async function parseCsvString<T extends Record<string, string>>(
   content: string,
   options?: CsvParseOptions,

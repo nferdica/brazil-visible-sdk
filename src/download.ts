@@ -22,6 +22,7 @@ export interface DownloadProgress {
 
 const DEFAULT_TIMEOUT = 300000; // 5 minutes for large files
 
+/** Download a file from a URL to a local directory with progress and resume support. */
 export async function download(url: string, options: DownloadOptions): Promise<string> {
   await mkdir(options.destDir, { recursive: true });
 
@@ -113,6 +114,7 @@ export async function download(url: string, options: DownloadOptions): Promise<s
   }
 }
 
+/** Extract a ZIP archive to a destination directory using the system unzip command. */
 export async function extractZip(zipPath: string, destDir: string): Promise<string[]> {
   // Use system unzip command (available on Linux/macOS)
   const { execFile } = await import("node:child_process");
@@ -133,6 +135,7 @@ export async function extractZip(zipPath: string, destDir: string): Promise<stri
   return listFilesRecursive(destDir);
 }
 
+/** Decompress a gzip file to a destination path. */
 export async function extractGzip(gzPath: string, destPath: string): Promise<string> {
   const { createReadStream } = await import("node:fs");
 

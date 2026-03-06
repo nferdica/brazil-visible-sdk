@@ -184,15 +184,38 @@ export const trabalho = new TrabalhoSource();
 /** Pre-instantiated CVM/Mercado source for convenience. Downloads data on first call. */
 export const mercado = new MercadoSource();
 
+/** Pre-instantiated Previdencia source for convenience. Downloads data on first call. */
 export const previdencia = new PrevidenciaSource();
+
+/** Pre-instantiated Reguladoras source for convenience. Downloads data on first call. */
 export const reguladoras = new ReguladorasSource();
+
+/** Pre-instantiated SINESP public safety source for convenience. */
 export const seguranca = new SegurancaSource();
+
+/** Pre-instantiated open data portals source for convenience. */
 export const portais = new PortaisSource();
+
+/** Pre-instantiated environmental data source for convenience. */
 export const ambiente = new AmbienteSource();
+
+/** Pre-instantiated transportation data source for convenience. */
 export const transportes = new TransportesSource();
+
+/** Pre-instantiated official gazettes source for convenience. */
 export const diarios = new DiariosSource();
+
+/** Pre-instantiated government APIs source for convenience. */
 export const governamentais = new GovernamentaisSource();
+
+/** Pre-instantiated miscellaneous agencies source for convenience. */
 export const outros = new OutrosSource();
+
+/** Pre-instantiated CNJ judiciary source for convenience. */
 export const cnj = new CnjSource();
+
+/** Pre-instantiated DATASUS health data source for convenience. Downloads data on first call. */
 export const datasus = new DataSusSource();
+
+/** Pre-instantiated geospatial data source for convenience. */
 export const geo = new GeoSource();

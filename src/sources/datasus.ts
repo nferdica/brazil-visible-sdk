@@ -140,6 +140,7 @@ export class DataSusSource extends Source {
     }
   }
 
+  /** Download and parse SIM mortality records. */
   async sim(params: DataSusParams): Promise<SimObito[]> {
     this.validateAno(params.ano);
     const uf = params.uf?.toUpperCase() ?? "BR";
@@ -172,6 +173,7 @@ export class DataSusSource extends Source {
     }
   }
 
+  /** Download and parse SIH hospital admission records. */
   async sih(params: DataSusParams): Promise<SihInternacao[]> {
     this.validateAno(params.ano);
     const uf = params.uf?.toUpperCase() ?? "BR";
@@ -204,6 +206,7 @@ export class DataSusSource extends Source {
     }
   }
 
+  /** Download and parse SINAN notifiable disease records. */
   async sinan(params: DataSusParams): Promise<SinanNotificacao[]> {
     this.validateAno(params.ano);
     const uf = params.uf?.toUpperCase() ?? "BR";
@@ -236,6 +239,7 @@ export class DataSusSource extends Source {
     }
   }
 
+  /** Download and parse SINASC live birth records. */
   async sinasc(params: DataSusParams): Promise<SinascNascimento[]> {
     this.validateAno(params.ano);
     const uf = params.uf?.toUpperCase() ?? "BR";

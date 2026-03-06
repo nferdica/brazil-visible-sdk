@@ -23,10 +23,12 @@ const DEFAULTS: ResolvedConfig = {
 
 let userConfig: BVConfig = {};
 
+/** Set global SDK configuration (timeout, retries, API keys). */
 export function configure(config: BVConfig): void {
   userConfig = { ...userConfig, ...config };
 }
 
+/** Return the resolved configuration, merging defaults, env vars, and user overrides. */
 export function getConfig(): ResolvedConfig {
   const envKeys: Record<string, string> = {};
   for (const [envVar, sourceName] of Object.entries(ENV_KEY_MAP)) {
@@ -43,6 +45,7 @@ export function getConfig(): ResolvedConfig {
   };
 }
 
+/** Reset all user configuration to defaults. */
 export function resetConfig(): void {
   userConfig = {};
 }
