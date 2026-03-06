@@ -74,12 +74,45 @@ export type {
   Filiado,
   ResultadoVotacao,
 } from "./sources/tse";
+export { ReceitaSource } from "./sources/receita";
+export type {
+  ReceitaDownloadParams,
+  Empresa,
+  Estabelecimento,
+  Socio,
+  SimplesNacional,
+} from "./sources/receita";
+export { InepSource } from "./sources/inep";
+export type {
+  InepDownloadParams,
+  EnemMicrodado,
+  CensoEscolarEscola,
+  CensoSuperiorIes,
+} from "./sources/inep";
+export { TrabalhoSource } from "./sources/trabalho";
+export type {
+  TrabalhoDownloadParams,
+  CagedItem,
+  RaisEstabelecimento,
+} from "./sources/trabalho";
+export { MercadoSource } from "./sources/mercado";
+export type {
+  CvmYearParams,
+  DfpItem,
+  ItrItem,
+  CiaAberta,
+  FundoInvestimento,
+} from "./sources/mercado";
 
 import { BcbSource } from "./sources/bcb";
 import { CguSource } from "./sources/cgu";
 import { IbgeSource } from "./sources/ibge";
+import { InepSource } from "./sources/inep";
 import { IpeaSource } from "./sources/ipea";
+import { MercadoSource } from "./sources/mercado";
+import { ReceitaSource } from "./sources/receita";
 import { TesouroSource } from "./sources/tesouro";
+import { TrabalhoSource } from "./sources/trabalho";
 import { TseSource } from "./sources/tse";
 
 /** Pre-instantiated BCB source for convenience. */
@@ -99,3 +132,15 @@ export const cgu = new CguSource();
 
 /** Pre-instantiated TSE source for convenience. Downloads data on first call. */
 export const tse = new TseSource();
+
+/** Pre-instantiated Receita Federal source for convenience. Downloads data on first call. */
+export const receita = new ReceitaSource();
+
+/** Pre-instantiated INEP source for convenience. Downloads data on first call. */
+export const inepData = new InepSource();
+
+/** Pre-instantiated Trabalho source for convenience. Downloads data on first call. */
+export const trabalho = new TrabalhoSource();
+
+/** Pre-instantiated CVM/Mercado source for convenience. Downloads data on first call. */
+export const mercado = new MercadoSource();

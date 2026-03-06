@@ -50,3 +50,32 @@ export type {
   Filiado,
   ResultadoVotacao,
 } from "./tse";
+export { ReceitaSource } from "./receita";
+export type {
+  ReceitaDownloadParams,
+  Empresa,
+  Estabelecimento,
+  Socio,
+  SimplesNacional,
+} from "./receita";
+export { InepSource } from "./inep";
+export type {
+  InepDownloadParams,
+  EnemMicrodado,
+  CensoEscolarEscola,
+  CensoSuperiorIes,
+} from "./inep";
+export { TrabalhoSource } from "./trabalho";
+export type {
+  TrabalhoDownloadParams,
+  CagedItem,
+  RaisEstabelecimento,
+} from "./trabalho";
+export { MercadoSource } from "./mercado";
+export type {
+  CvmYearParams,
+  DfpItem,
+  ItrItem,
+  CiaAberta,
+  FundoInvestimento,
+} from "./mercado";
