@@ -10,7 +10,14 @@ export { BVClient } from "./client";
 export type { BVClientOptions } from "./client";
 export { BVError, BVHttpError, BVTimeoutError, BVValidationError } from "./errors";
 export { BcbSource } from "./sources/bcb";
-export type { SgsParams, SgsSerie, ExpectativasParams, ExpectativaMercado } from "./sources/bcb";
+export type {
+  SgsParams,
+  SgsSerie,
+  ExpectativasParams,
+  ExpectativaMercado,
+  IfDataParams,
+  IfDataItem,
+} from "./sources/bcb";
 export { IbgeSource } from "./sources/ibge";
 export type {
   Regiao,
@@ -73,6 +80,9 @@ export type {
   BemCandidato,
   Filiado,
   ResultadoVotacao,
+  PrestacaoConta,
+  Eleitor,
+  BoletimUrna,
 } from "./sources/tse";
 export { ReceitaSource } from "./sources/receita";
 export type {
@@ -88,6 +98,7 @@ export type {
   EnemMicrodado,
   CensoEscolarEscola,
   CensoSuperiorIes,
+  FndeRepasse,
 } from "./sources/inep";
 export { TrabalhoSource } from "./sources/trabalho";
 export type {
@@ -102,6 +113,9 @@ export type {
   ItrItem,
   CiaAberta,
   FundoInvestimento,
+  CvmAdministrador,
+  CvmFatoRelevante,
+  B3Cotacao,
 } from "./sources/mercado";
 
 export * from "./sources/previdencia";
@@ -162,7 +176,7 @@ export const tse = new TseSource();
 export const receita = new ReceitaSource();
 
 /** Pre-instantiated INEP source for convenience. Downloads data on first call. */
-export const inepData = new InepSource();
+export const inep = new InepSource();
 
 /** Pre-instantiated Trabalho source for convenience. Downloads data on first call. */
 export const trabalho = new TrabalhoSource();

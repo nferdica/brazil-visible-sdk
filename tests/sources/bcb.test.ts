@@ -109,4 +109,94 @@ describe("BcbSource", () => {
       expect(result[0]?.Media).toBe(0.49);
     });
   });
+
+  describe("ifdata", () => {
+    const ifdataUrl = "https://olinda.bcb.gov.br/olinda/servico/IF.data/versao/v1/odata/IfData";
+
+    const mockItem = {
+      CodInst: "1234",
+      NomeInst: "Banco Teste",
+      AnoBase: 2023,
+      CodConta: "100",
+      NomeConta: "Ativo Total",
+      Valor: "999999.99",
+    };
+
+    it("fetches IF.data with codInst and anoBase filters", async () => {
+      server.use(
+        http.get(ifdataUrl, ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get("$format")).toBe("json");
+          expect(url.searchParams.get("$filter")).toBe("CodInst eq '1234' and AnoBase eq 2023");
+          return HttpResponse.json({
+            "@odata.context": "...",
+            value: [mockItem],
+          });
+        }),
+      );
+
+      const result = await bcb.ifdata({ codInst: "1234", anoBase: 2023 });
+      expect(result).toHaveLength(1);
+      expect(result[0]?.CodInst).toBe("1234");
+      expect(result[0]?.NomeInst).toBe("Banco Teste");
+      expect(result[0]?.AnoBase).toBe(2023);
+    });
+
+    it("fetches IF.data with custom filter and top/skip", async () => {
+      server.use(
+        http.get(ifdataUrl, ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get("$format")).toBe("json");
+          expect(url.searchParams.get("$top")).toBe("10");
+          expect(url.searchParams.get("$skip")).toBe("5");
+          expect(url.searchParams.get("$filter")).toBe("AnoBase eq 2022");
+          return HttpResponse.json({
+            "@odata.context": "...",
+            value: [mockItem],
+          });
+        }),
+      );
+
+      const result = await bcb.ifdata({
+        filter: "AnoBase eq 2022",
+        top: 10,
+        skip: 5,
+      });
+      expect(result).toHaveLength(1);
+    });
+
+    it("fetches IF.data with no params", async () => {
+      server.use(
+        http.get(ifdataUrl, ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get("$format")).toBe("json");
+          expect(url.searchParams.has("$filter")).toBe(false);
+          expect(url.searchParams.has("$top")).toBe(false);
+          return HttpResponse.json({
+            "@odata.context": "...",
+            value: [mockItem, mockItem],
+          });
+        }),
+      );
+
+      const result = await bcb.ifdata();
+      expect(result).toHaveLength(2);
+    });
+
+    it("applies orderBy param", async () => {
+      server.use(
+        http.get(ifdataUrl, ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get("$orderby")).toBe("AnoBase desc");
+          return HttpResponse.json({
+            "@odata.context": "...",
+            value: [],
+          });
+        }),
+      );
+
+      const result = await bcb.ifdata({ orderBy: "AnoBase desc" });
+      expect(result).toEqual([]);
+    });
+  });
 });

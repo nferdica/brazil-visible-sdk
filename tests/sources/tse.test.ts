@@ -113,6 +113,101 @@ describe("TseSource", () => {
     });
   });
 
+  describe("prestacaoContas", () => {
+    it("downloads and parses prestacao de contas CSV", async () => {
+      const { download, extractZip } = await import("../../src/download");
+
+      const extractDir = join(TEST_CACHE_DIR, "tse-prestacao-2022", "extracted");
+      await mkdir(extractDir, { recursive: true });
+
+      const csvContent = [
+        '"SQ_CANDIDATO";"NR_CPF_CNPJ_DOADOR";"NM_DOADOR";"VR_RECEITA";"DS_ORIGEM_RECEITA";"DS_NATUREZA_RECEITA"',
+        '"1234";"00000000000";"JOAO DA SILVA";"50000.00";"FUNDO PARTIDARIO";"TRANSFERENCIA ELETRONICA"',
+      ].join("\n");
+
+      await writeFile(join(extractDir, "prestacao_contas_2022_SP.csv"), csvContent, "utf-8");
+
+      vi.mocked(download).mockResolvedValue(join(TEST_CACHE_DIR, "tse-prestacao-2022", "fake.zip"));
+      vi.mocked(extractZip).mockResolvedValue([join(extractDir, "prestacao_contas_2022_SP.csv")]);
+
+      const result = await tse.prestacaoContas({ ano: 2022, estado: "SP" });
+      expect(result).toHaveLength(1);
+      expect(result[0]?.SQ_CANDIDATO).toBe("1234");
+      expect(result[0]?.NM_DOADOR).toBe("JOAO DA SILVA");
+      expect(result[0]?.VR_RECEITA).toBe("50000.00");
+      expect(result[0]?.DS_ORIGEM_RECEITA).toBe("FUNDO PARTIDARIO");
+
+      expect(download).toHaveBeenCalledWith(
+        "https://cdn.tse.jus.br/estatistica/sead/odsele/prestacao_contas/prestacao_contas_2022.zip",
+        expect.objectContaining({ destDir: expect.stringContaining("tse-prestacao-2022") }),
+      );
+    });
+  });
+
+  describe("eleitorado", () => {
+    it("downloads and parses eleitorado CSV", async () => {
+      const { download, extractZip } = await import("../../src/download");
+
+      const extractDir = join(TEST_CACHE_DIR, "tse-eleitorado-2022", "extracted");
+      await mkdir(extractDir, { recursive: true });
+
+      const csvContent = [
+        '"NR_ZONA";"NR_SECAO";"CD_MUNICIPIO";"NM_MUNICIPIO";"SG_UF";"QT_ELEITORES_PERFIL";"CD_GENERO";"CD_FAIXA_ETARIA";"CD_GRAU_ESCOLARIDADE"',
+        '"001";"0100";"71072";"SAO PAULO";"SP";"150";"2";"2";"6"',
+      ].join("\n");
+
+      await writeFile(join(extractDir, "eleitorado_2022_SP.csv"), csvContent, "utf-8");
+
+      vi.mocked(download).mockResolvedValue(
+        join(TEST_CACHE_DIR, "tse-eleitorado-2022", "fake.zip"),
+      );
+      vi.mocked(extractZip).mockResolvedValue([join(extractDir, "eleitorado_2022_SP.csv")]);
+
+      const result = await tse.eleitorado({ ano: 2022, estado: "SP" });
+      expect(result).toHaveLength(1);
+      expect(result[0]?.NM_MUNICIPIO).toBe("SAO PAULO");
+      expect(result[0]?.SG_UF).toBe("SP");
+      expect(result[0]?.QT_ELEITORES_PERFIL).toBe("150");
+      expect(result[0]?.CD_GENERO).toBe("2");
+
+      expect(download).toHaveBeenCalledWith(
+        "https://cdn.tse.jus.br/estatistica/sead/odsele/eleitorado/eleitorado_2022.zip",
+        expect.objectContaining({ destDir: expect.stringContaining("tse-eleitorado-2022") }),
+      );
+    });
+  });
+
+  describe("boletins", () => {
+    it("downloads and parses boletim de urna CSV", async () => {
+      const { download, extractZip } = await import("../../src/download");
+
+      const extractDir = join(TEST_CACHE_DIR, "tse-boletim-2022", "extracted");
+      await mkdir(extractDir, { recursive: true });
+
+      const csvContent = [
+        '"SG_UF";"CD_MUNICIPIO";"NR_ZONA";"NR_SECAO";"NR_VOTAVEL";"QT_VOTOS";"DS_CARGO"',
+        '"SP";"71072";"001";"0100";"13";"500";"PRESIDENTE"',
+      ].join("\n");
+
+      await writeFile(join(extractDir, "boletim_urna_2022_SP.csv"), csvContent, "utf-8");
+
+      vi.mocked(download).mockResolvedValue(join(TEST_CACHE_DIR, "tse-boletim-2022", "fake.zip"));
+      vi.mocked(extractZip).mockResolvedValue([join(extractDir, "boletim_urna_2022_SP.csv")]);
+
+      const result = await tse.boletins({ ano: 2022, estado: "SP" });
+      expect(result).toHaveLength(1);
+      expect(result[0]?.SG_UF).toBe("SP");
+      expect(result[0]?.NR_VOTAVEL).toBe("13");
+      expect(result[0]?.QT_VOTOS).toBe("500");
+      expect(result[0]?.DS_CARGO).toBe("PRESIDENTE");
+
+      expect(download).toHaveBeenCalledWith(
+        "https://cdn.tse.jus.br/estatistica/sead/odsele/boletim_urna/boletim_urna_2022.zip",
+        expect.objectContaining({ destDir: expect.stringContaining("tse-boletim-2022") }),
+      );
+    });
+  });
+
   describe("validation", () => {
     it("rejects ano before 1998", async () => {
       await expect(tse.candidaturas({ ano: 1990 })).rejects.toThrow(BVValidationError);

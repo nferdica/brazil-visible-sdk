@@ -38,6 +38,7 @@ export class SegurancaSource extends Source {
   readonly name = "SINESP";
   readonly baseUrl = "https://dados.gov.br/dados/api/publico/conjuntos-dados";
 
+  /** Fetch criminal occurrence records from SINESP. */
   async ocorrencias(params?: OcorrenciasParams): Promise<OcorrenciaCriminal[]> {
     return this.client.get<OcorrenciaCriminal[]>(`${this.baseUrl}/seguranca-publica/ocorrencias`, {
       params: {
@@ -48,6 +49,7 @@ export class SegurancaSource extends Source {
     });
   }
 
+  /** Fetch public safety statistical indicators from SINESP. */
   async indicadores(params?: IndicadorParams): Promise<IndicadorSeguranca[]> {
     return this.client.get<IndicadorSeguranca[]>(`${this.baseUrl}/seguranca-publica/indicadores`, {
       params: {

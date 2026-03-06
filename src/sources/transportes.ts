@@ -69,12 +69,51 @@ export interface DenatranFrota {
   [key: string]: string | number;
 }
 
+// ── DNIT Types ───────────────────────────────────────────────────
+
+export interface DnitParams {
+  uf?: string;
+  tipo?: string;
+  pagina?: number;
+}
+
+export interface DnitRodovia {
+  codigo: string;
+  nome: string;
+  uf: string;
+  extensaoKm: string;
+  tipoTrecho: string;
+  superficie: string;
+  situacao: string;
+  [key: string]: string;
+}
+
+// ── ANTT Types ───────────────────────────────────────────────────
+
+export interface AnttParams {
+  q?: string;
+  rows?: number;
+  pagina?: number;
+}
+
+export interface AnttConcessao {
+  rodovia: string;
+  concessionaria: string;
+  trechoInicial: string;
+  trechoFinal: string;
+  extensaoKm: string;
+  uf: string;
+  pedagios: string;
+  [key: string]: string;
+}
+
 // ── Source ─────────────────────────────────────────────────────────
 
 export class TransportesSource extends Source {
   readonly name = "Transportes";
   readonly baseUrl = "https://dados.gov.br/dados/api/publico/conjuntos-dados";
 
+  /** Fetch ANAC flight statistics data. */
   async anacVoos(params?: AnacVooParams): Promise<AnacVoo[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 
@@ -93,6 +132,7 @@ export class TransportesSource extends Source {
     });
   }
 
+  /** Fetch PRF highway accident records. */
   async prfAcidentes(params?: PrfAcidenteParams): Promise<PrfAcidente[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 
@@ -108,6 +148,7 @@ export class TransportesSource extends Source {
     });
   }
 
+  /** Fetch DENATRAN vehicle fleet statistics. */
   async denatranFrota(params?: DenatranFrotaParams): Promise<DenatranFrota[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 
@@ -124,5 +165,46 @@ export class TransportesSource extends Source {
     return this.client.get<DenatranFrota[]>(`${this.baseUrl}/denatran-frota`, {
       params: queryParams,
     });
+  }
+
+  /** Fetch DNIT federal highway data. */
+  async dnit(params?: DnitParams): Promise<DnitRodovia[]> {
+    const queryParams: Record<string, string | number | undefined> = {
+      id: "dnit-rodovias",
+    };
+
+    if (params?.uf !== undefined) {
+      queryParams.uf = params.uf;
+    }
+    if (params?.tipo !== undefined) {
+      queryParams.tipo = params.tipo;
+    }
+    if (params?.pagina !== undefined) {
+      queryParams.pagina = params.pagina;
+    }
+
+    return this.client.get<DnitRodovia[]>(this.baseUrl, {
+      params: queryParams,
+    });
+  }
+
+  /** Fetch ANTT highway concession data. */
+  async antt(params?: AnttParams): Promise<AnttConcessao[]> {
+    const queryParams: Record<string, string | number | undefined> = {};
+
+    if (params?.q !== undefined) {
+      queryParams.q = params.q;
+    }
+    if (params?.rows !== undefined) {
+      queryParams.rows = params.rows;
+    }
+    if (params?.pagina !== undefined) {
+      queryParams.pagina = params.pagina;
+    }
+
+    return this.client.get<AnttConcessao[]>(
+      "https://dados.antt.gov.br/dataset/api/3/action/package_search",
+      { params: queryParams },
+    );
   }
 }

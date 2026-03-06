@@ -1,6 +1,7 @@
 import { http, HttpResponse } from "msw";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { BVClient } from "../../src/client";
+import { configure, resetConfig } from "../../src/config";
 import { GovernamentaisSource } from "../../src/sources/governamentais";
 import { server } from "../helpers/setup";
 
@@ -68,6 +69,14 @@ describe("GovernamentaisSource", () => {
   });
 
   describe("siape", () => {
+    beforeEach(() => {
+      configure({ apiKeys: { cgu: "test-api-key" } });
+    });
+
+    afterEach(() => {
+      resetConfig();
+    });
+
     it("returns federal employees data", async () => {
       server.use(
         http.get("https://api.portaldatransparencia.gov.br/api-de-dados/servidores", () => {

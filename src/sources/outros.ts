@@ -60,6 +60,7 @@ export class OutrosSource extends Source {
   readonly name = "Outras Agências";
   readonly baseUrl = "https://dados.gov.br/dados/api/publico";
 
+  /** Fetch ANS health insurance operators registry. */
   async ansOperadoras(params?: AnsOperadoraParams): Promise<AnsOperadora[]> {
     return this.client.get<AnsOperadora[]>(
       "https://dadosabertos.ans.gov.br/api/3/action/datastore_search",
@@ -73,6 +74,7 @@ export class OutrosSource extends Source {
     );
   }
 
+  /** Fetch ANTAQ port facilities registry. */
   async antaqPortos(params?: AntaqPortoParams): Promise<AntaqPorto[]> {
     return this.client.get<AntaqPorto[]>("https://web.antaq.gov.br/api/portos", {
       params: {
@@ -83,6 +85,7 @@ export class OutrosSource extends Source {
     });
   }
 
+  /** Fetch ANCINE audiovisual projects registry. */
   async ancineProjetos(): Promise<AncineProjeto[]> {
     return this.client.get<AncineProjeto[]>("https://api.ancine.gov.br/projetos");
   }

@@ -94,6 +94,7 @@ export class ReguladorasSource extends Source {
     this.cache = config?.cache ?? getDefaultCache();
   }
 
+  /** Download and parse ANATEL broadband access data for a given year. */
   async anatelAcessos(params?: ReguladorasDownloadParams): Promise<AnatelAcesso[]> {
     const ano = params?.ano ?? new Date().getFullYear();
     this.validateAno(ano);
@@ -101,6 +102,7 @@ export class ReguladorasSource extends Source {
     return this.downloadCsvAndParse<AnatelAcesso>(url, `reguladoras-anatel-${ano}`);
   }
 
+  /** Download and parse ANEEL approved electricity tariffs for a given year. */
   async aneelTarifas(params?: ReguladorasDownloadParams): Promise<AneelTarifa[]> {
     const ano = params?.ano ?? new Date().getFullYear();
     this.validateAno(ano);
@@ -108,6 +110,7 @@ export class ReguladorasSource extends Source {
     return this.downloadCsvAndParse<AneelTarifa>(url, `reguladoras-aneel-${ano}`);
   }
 
+  /** Download and parse ANP fuel price survey data for a given year. */
   async anpCombustiveis(params?: ReguladorasDownloadParams): Promise<AnpCombustivel[]> {
     const ano = params?.ano ?? new Date().getFullYear();
     this.validateAno(ano);
@@ -115,6 +118,7 @@ export class ReguladorasSource extends Source {
     return this.downloadCsvAndParse<AnpCombustivel>(url, `reguladoras-anp-${ano}`);
   }
 
+  /** Download and parse the ANVISA approved medications registry. */
   async anvisaMedicamentos(): Promise<AnvisaMedicamento[]> {
     return this.downloadCsvAndParse<AnvisaMedicamento>(
       ANVISA_CSV_URL,

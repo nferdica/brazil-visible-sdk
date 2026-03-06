@@ -183,10 +183,12 @@ export class IbgeSource extends Source {
 
   // ── Localidades ────────────────────────────────────────────────
 
+  /** List all Brazilian macro-regions. */
   async regioes(): Promise<Regiao[]> {
     return this.client.get<Regiao[]>(`${this.localidadesBase}/regioes`);
   }
 
+  /** List Brazilian states, optionally filtered by region. */
   async estados(params?: { regiao?: number }): Promise<Estado[]> {
     const path = params?.regiao
       ? `${this.localidadesBase}/regioes/${params.regiao}/estados`
@@ -194,6 +196,7 @@ export class IbgeSource extends Source {
     return this.client.get<Estado[]>(path);
   }
 
+  /** List mesoregions, optionally filtered by state. */
   async mesorregioes(params?: { uf?: number }): Promise<Mesorregiao[]> {
     const path = params?.uf
       ? `${this.localidadesBase}/estados/${params.uf}/mesorregioes`
@@ -201,6 +204,7 @@ export class IbgeSource extends Source {
     return this.client.get<Mesorregiao[]>(path);
   }
 
+  /** List microregions, optionally filtered by state. */
   async microrregioes(params?: { uf?: number }): Promise<Microrregiao[]> {
     const path = params?.uf
       ? `${this.localidadesBase}/estados/${params.uf}/microrregioes`
@@ -208,6 +212,7 @@ export class IbgeSource extends Source {
     return this.client.get<Microrregiao[]>(path);
   }
 
+  /** List municipalities, optionally filtered by state. */
   async municipios(params?: { uf?: number }): Promise<Municipio[]> {
     const path = params?.uf
       ? `${this.localidadesBase}/estados/${params.uf}/municipios`
@@ -215,6 +220,7 @@ export class IbgeSource extends Source {
     return this.client.get<Municipio[]>(path);
   }
 
+  /** List districts, optionally filtered by state. */
   async distritos(params?: { uf?: number }): Promise<Distrito[]> {
     const path = params?.uf
       ? `${this.localidadesBase}/estados/${params.uf}/distritos`
@@ -224,6 +230,7 @@ export class IbgeSource extends Source {
 
   // ── Agregados ──────────────────────────────────────────────────
 
+  /** Fetch aggregate statistical data from SIDRA tables. */
   async agregados(params: AgregadosParams): Promise<AgregadoVariavel[]> {
     this.validateTabela(params.tabela);
 
@@ -238,6 +245,7 @@ export class IbgeSource extends Source {
     return convertRawAgregado(raw);
   }
 
+  /** Fetch metadata for a specific SIDRA aggregate table. */
   async agregadosMetadados(tabela: number): Promise<AgregadoMetadados> {
     this.validateTabela(tabela);
     return this.client.get<AgregadoMetadados>(`${this.agregadosBase}/${tabela}/metadados`);
@@ -245,6 +253,7 @@ export class IbgeSource extends Source {
 
   // ── Nomes ──────────────────────────────────────────────────────
 
+  /** Fetch historical frequency data for a given Brazilian first name. */
   async nomes(params: NomesParams): Promise<NomeFrequencia[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 
@@ -260,6 +269,7 @@ export class IbgeSource extends Source {
     });
   }
 
+  /** Fetch the ranking of most popular Brazilian first names. */
   async nomesRanking(params?: NomesRankingParams): Promise<NomeRanking[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 

@@ -47,6 +47,7 @@ export class DiariosSource extends Source {
   readonly name = "Diários Oficiais";
   readonly baseUrl = "https://www.in.gov.br/servicos/diario-oficial-da-uniao";
 
+  /** Search the Federal Official Gazette (DOU) by keyword. */
   async dou(params: DouSearchParams): Promise<DouItem[]> {
     return this.client.get<DouItem[]>("https://www.in.gov.br/leiturajornal", {
       params: {
@@ -59,6 +60,7 @@ export class DiariosSource extends Source {
     });
   }
 
+  /** Search a state Official Gazette (DOE) by keyword and state. */
   async doe(params: DoeSearchParams): Promise<DoeItem[]> {
     return this.client.get<DoeItem[]>(
       `https://dados.gov.br/dados/api/publico/conjuntos-dados/diarios-oficiais/${params.estado}`,

@@ -223,4 +223,147 @@ describe("TransportesSource", () => {
       expect(result[0]?.quantidade).toBe(98765);
     });
   });
+
+  describe("dnit", () => {
+    it("returns road data without params", async () => {
+      server.use(
+        http.get(BASE, ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get("id")).toBe("dnit-rodovias");
+          return HttpResponse.json([
+            {
+              codigo: "BR-101",
+              nome: "Rodovia Governador Mário Covas",
+              uf: "SC",
+              extensaoKm: "465.9",
+              tipoTrecho: "Federal",
+              superficie: "Pavimentada",
+              situacao: "Ativa",
+            },
+            {
+              codigo: "BR-116",
+              nome: "Rodovia Santos Dumont",
+              uf: "MG",
+              extensaoKm: "312.4",
+              tipoTrecho: "Federal",
+              superficie: "Pavimentada",
+              situacao: "Ativa",
+            },
+          ]);
+        }),
+      );
+
+      const result = await transportes.dnit();
+      expect(result).toHaveLength(2);
+      expect(result[0]).toEqual({
+        codigo: "BR-101",
+        nome: "Rodovia Governador Mário Covas",
+        uf: "SC",
+        extensaoKm: "465.9",
+        tipoTrecho: "Federal",
+        superficie: "Pavimentada",
+        situacao: "Ativa",
+      });
+      expect(result[1]?.codigo).toBe("BR-116");
+    });
+
+    it("passes query params when provided", async () => {
+      server.use(
+        http.get(BASE, ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get("id")).toBe("dnit-rodovias");
+          expect(url.searchParams.get("uf")).toBe("SP");
+          expect(url.searchParams.get("tipo")).toBe("Federal");
+          expect(url.searchParams.get("pagina")).toBe("2");
+          return HttpResponse.json([
+            {
+              codigo: "BR-153",
+              nome: "Rodovia Transbrasiliana",
+              uf: "SP",
+              extensaoKm: "320.7",
+              tipoTrecho: "Federal",
+              superficie: "Pavimentada",
+              situacao: "Ativa",
+            },
+          ]);
+        }),
+      );
+
+      const result = await transportes.dnit({ uf: "SP", tipo: "Federal", pagina: 2 });
+      expect(result).toHaveLength(1);
+      expect(result[0]?.uf).toBe("SP");
+      expect(result[0]?.extensaoKm).toBe("320.7");
+    });
+  });
+
+  describe("antt", () => {
+    const ANTT_BASE = "https://dados.antt.gov.br/dataset/api/3/action/package_search";
+
+    it("returns concession data without params", async () => {
+      server.use(
+        http.get(ANTT_BASE, () => {
+          return HttpResponse.json([
+            {
+              rodovia: "BR-116",
+              concessionaria: "Autopista Fluminense",
+              trechoInicial: "Rio de Janeiro",
+              trechoFinal: "Teresópolis",
+              extensaoKm: "142.5",
+              uf: "RJ",
+              pedagios: "3",
+            },
+            {
+              rodovia: "BR-101",
+              concessionaria: "Autopista Litoral Sul",
+              trechoInicial: "Curitiba",
+              trechoFinal: "Florianópolis",
+              extensaoKm: "382.3",
+              uf: "SC",
+              pedagios: "5",
+            },
+          ]);
+        }),
+      );
+
+      const result = await transportes.antt();
+      expect(result).toHaveLength(2);
+      expect(result[0]).toEqual({
+        rodovia: "BR-116",
+        concessionaria: "Autopista Fluminense",
+        trechoInicial: "Rio de Janeiro",
+        trechoFinal: "Teresópolis",
+        extensaoKm: "142.5",
+        uf: "RJ",
+        pedagios: "3",
+      });
+      expect(result[1]?.concessionaria).toBe("Autopista Litoral Sul");
+    });
+
+    it("passes query params when provided", async () => {
+      server.use(
+        http.get(ANTT_BASE, ({ request }) => {
+          const url = new URL(request.url);
+          expect(url.searchParams.get("q")).toBe("concessao");
+          expect(url.searchParams.get("rows")).toBe("10");
+          expect(url.searchParams.get("pagina")).toBe("1");
+          return HttpResponse.json([
+            {
+              rodovia: "BR-040",
+              concessionaria: "Via 040",
+              trechoInicial: "Brasília",
+              trechoFinal: "Juiz de Fora",
+              extensaoKm: "936.8",
+              uf: "MG",
+              pedagios: "7",
+            },
+          ]);
+        }),
+      );
+
+      const result = await transportes.antt({ q: "concessao", rows: 10, pagina: 1 });
+      expect(result).toHaveLength(1);
+      expect(result[0]?.rodovia).toBe("BR-040");
+      expect(result[0]?.extensaoKm).toBe("936.8");
+    });
+  });
 });

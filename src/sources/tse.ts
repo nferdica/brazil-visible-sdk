@@ -133,6 +133,40 @@ export interface ResultadoVotacao {
   [key: string]: string;
 }
 
+export interface PrestacaoConta {
+  SQ_CANDIDATO: string;
+  NR_CPF_CNPJ_DOADOR: string;
+  NM_DOADOR: string;
+  VR_RECEITA: string;
+  DS_ORIGEM_RECEITA: string;
+  DS_NATUREZA_RECEITA: string;
+  [key: string]: string;
+}
+
+export interface Eleitor {
+  NR_ZONA: string;
+  NR_SECAO: string;
+  CD_MUNICIPIO: string;
+  NM_MUNICIPIO: string;
+  SG_UF: string;
+  QT_ELEITORES_PERFIL: string;
+  CD_GENERO: string;
+  CD_FAIXA_ETARIA: string;
+  CD_GRAU_ESCOLARIDADE: string;
+  [key: string]: string;
+}
+
+export interface BoletimUrna {
+  SG_UF: string;
+  CD_MUNICIPIO: string;
+  NR_ZONA: string;
+  NR_SECAO: string;
+  NR_VOTAVEL: string;
+  QT_VOTOS: string;
+  DS_CARGO: string;
+  [key: string]: string;
+}
+
 // ── URL Builders ──────────────────────────────────────────────────
 
 const TSE_CDN = "https://cdn.tse.jus.br/estatistica/sead/odsele";
@@ -160,24 +194,49 @@ export class TseSource extends Source {
     this.cache = config?.cache ?? getDefaultCache();
   }
 
+  /** Download and parse candidate registration data for a given election year. */
   async candidaturas(params: TseDownloadParams): Promise<Candidatura[]> {
     this.validateAno(params.ano);
     const url = tseZipUrl("consulta_cand", params.ano);
     return this.downloadAndParse<Candidatura>(url, `tse-cand-${params.ano}`, params);
   }
 
+  /** Download and parse declared assets of candidates for a given election year. */
   async bens(params: TseDownloadParams): Promise<BemCandidato[]> {
     this.validateAno(params.ano);
     const url = tseZipUrl("bem_candidato", params.ano);
     return this.downloadAndParse<BemCandidato>(url, `tse-bens-${params.ano}`, params);
   }
 
+  /** Download and parse election voting results by municipality and zone. */
   async resultados(params: TseDownloadParams): Promise<ResultadoVotacao[]> {
     this.validateAno(params.ano);
     const url = tseZipUrl("votacao_candidato_munzona", params.ano);
     return this.downloadAndParse<ResultadoVotacao>(url, `tse-result-${params.ano}`, params);
   }
 
+  /** Download and parse campaign finance accountability data. */
+  async prestacaoContas(params: TseDownloadParams): Promise<PrestacaoConta[]> {
+    this.validateAno(params.ano);
+    const url = tseZipUrl("prestacao_contas", params.ano);
+    return this.downloadAndParse<PrestacaoConta>(url, `tse-prestacao-${params.ano}`, params);
+  }
+
+  /** Download and parse electorate profile data for a given year. */
+  async eleitorado(params: TseDownloadParams): Promise<Eleitor[]> {
+    this.validateAno(params.ano);
+    const url = tseZipUrl("eleitorado", params.ano);
+    return this.downloadAndParse<Eleitor>(url, `tse-eleitorado-${params.ano}`, params);
+  }
+
+  /** Download and parse ballot box bulletins for a given election year. */
+  async boletins(params: TseDownloadParams): Promise<BoletimUrna[]> {
+    this.validateAno(params.ano);
+    const url = tseZipUrl("boletim_urna", params.ano);
+    return this.downloadAndParse<BoletimUrna>(url, `tse-boletim-${params.ano}`, params);
+  }
+
+  /** Download and parse party membership records by party and state. */
   async filiados(params: { partido: string; estado: string }): Promise<Filiado[]> {
     if (!params.partido || !params.estado) {
       throw new BVValidationError("partido/estado", "must be provided", "tse");

@@ -95,6 +95,48 @@ describe("InepSource", () => {
     });
   });
 
+  describe("fnde", () => {
+    it("downloads and parses FNDE repasses CSV", async () => {
+      const { download } = await import("../../src/download");
+
+      const downloadDir = join(TEST_CACHE_DIR, "inep-fnde");
+      await mkdir(downloadDir, { recursive: true });
+
+      const csvContent =
+        '"ANO";"MES";"UF";"MUNICIPIO";"PROGRAMA";"ACAO";"VALOR_TOTAL"\n"2024";"01";"SP";"Sao Paulo";"PNAE";"Alimentacao Escolar";"1500000.00"\n';
+      const csvPath = join(downloadDir, "fnde_repasses.csv");
+      await writeFile(csvPath, csvContent, "utf-8");
+
+      vi.mocked(download).mockResolvedValue(csvPath);
+
+      const result = await inep.fnde();
+      expect(result).toHaveLength(1);
+      expect(result[0]?.ANO).toBe("2024");
+      expect(result[0]?.UF).toBe("SP");
+      expect(result[0]?.PROGRAMA).toBe("PNAE");
+      expect(result[0]?.VALOR_TOTAL).toBe("1500000.00");
+    });
+
+    it("uses cached data when available", async () => {
+      const { download } = await import("../../src/download");
+
+      const downloadDir = join(TEST_CACHE_DIR, "inep-fnde");
+      await mkdir(downloadDir, { recursive: true });
+
+      const csvContent =
+        '"ANO";"MES";"UF";"MUNICIPIO";"PROGRAMA";"ACAO";"VALOR_TOTAL"\n"2023";"06";"RJ";"Rio de Janeiro";"FUNDEB";"Educacao Basica";"2000000.00"\n';
+      await writeFile(join(downloadDir, "fnde_repasses.csv"), csvContent, "utf-8");
+
+      await cache.put("inep-fnde", downloadDir);
+
+      const result = await inep.fnde();
+      expect(result).toHaveLength(1);
+      expect(result[0]?.UF).toBe("RJ");
+      expect(result[0]?.PROGRAMA).toBe("FUNDEB");
+      expect(download).not.toHaveBeenCalled();
+    });
+  });
+
   describe("validation", () => {
     it("rejects enem ano before 1998", async () => {
       await expect(inep.enem({ ano: 1997 })).rejects.toThrow(BVValidationError);

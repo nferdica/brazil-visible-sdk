@@ -1,5 +1,12 @@
 export { BcbSource } from "./bcb";
-export type { SgsParams, SgsSerie, ExpectativasParams, ExpectativaMercado } from "./bcb";
+export type {
+  SgsParams,
+  SgsSerie,
+  ExpectativasParams,
+  ExpectativaMercado,
+  IfDataParams,
+  IfDataItem,
+} from "./bcb";
 export { IbgeSource } from "./ibge";
 export type {
   Regiao,
@@ -55,6 +62,9 @@ export type {
   BemCandidato,
   Filiado,
   ResultadoVotacao,
+  PrestacaoConta,
+  Eleitor,
+  BoletimUrna,
 } from "./tse";
 export { ReceitaSource } from "./receita";
 export type {
@@ -70,6 +80,7 @@ export type {
   EnemMicrodado,
   CensoEscolarEscola,
   CensoSuperiorIes,
+  FndeRepasse,
 } from "./inep";
 export { TrabalhoSource } from "./trabalho";
 export type {
@@ -84,6 +95,9 @@ export type {
   ItrItem,
   CiaAberta,
   FundoInvestimento,
+  CvmAdministrador,
+  CvmFatoRelevante,
+  B3Cotacao,
 } from "./mercado";
 export { PrevidenciaSource } from "./previdencia";
 export type { PrevidenciaDownloadParams, BeneficioConcedido, FundoPensao } from "./previdencia";
@@ -92,11 +106,25 @@ export type { AnatelAcesso, AneelTarifa, AnpCombustivel, AnvisaMedicamento } fro
 export { SegurancaSource } from "./seguranca";
 export type { OcorrenciaCriminal, IndicadorSeguranca } from "./seguranca";
 export { PortaisSource } from "./portais";
-export type { ConjuntoDados, Recurso, ExecucaoOrcamentaria } from "./portais";
+export type { ConjuntoDados, Recurso, ExecucaoOrcamentaria, BaseDadosDataset } from "./portais";
 export { AmbienteSource } from "./ambiente";
-export type { ProdesItem, DeterAlerta, FocoCalor, IbamaMulta } from "./ambiente";
+export type {
+  ProdesItem,
+  DeterAlerta,
+  FocoCalor,
+  IbamaMulta,
+  CarImovel,
+  UnidadeConservacao,
+  RecursoHidrico,
+} from "./ambiente";
 export { TransportesSource } from "./transportes";
-export type { AnacVoo, PrfAcidente, DenatranFrota } from "./transportes";
+export type {
+  AnacVoo,
+  PrfAcidente,
+  DenatranFrota,
+  DnitRodovia,
+  AnttConcessao,
+} from "./transportes";
 export { DiariosSource } from "./diarios";
 export type { DouItem, DoeItem } from "./diarios";
 export { GovernamentaisSource } from "./governamentais";
@@ -106,6 +134,20 @@ export type { AnsOperadora, AntaqPorto, AncineProjeto } from "./outros";
 export { CnjSource } from "./cnj";
 export type { DataJudProcesso, JusticaIndicador } from "./cnj";
 export { DataSusSource } from "./datasus";
-export type { CnesEstabelecimento, SimObito, SihInternacao } from "./datasus";
+export type {
+  CnesEstabelecimento,
+  SimObito,
+  SihInternacao,
+  SinanNotificacao,
+  SinascNascimento,
+} from "./datasus";
 export { GeoSource } from "./geo";
-export type { GeoMunicipio, WmsCapabilities, WmsLayer } from "./geo";
+export type {
+  GeoMunicipio,
+  WmsCapabilities,
+  WmsLayer,
+  CprmFeature,
+  IncraFeature,
+  IndeFeature,
+  InpeImagem,
+} from "./geo";

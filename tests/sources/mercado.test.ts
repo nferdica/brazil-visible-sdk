@@ -177,6 +177,172 @@ describe("MercadoSource", () => {
     });
   });
 
+  describe("cvmAdministradores", () => {
+    it("downloads single CSV and parses it", async () => {
+      const { download } = await import("../../src/download");
+
+      const destDir = join(TEST_CACHE_DIR, "cvm-administradores", "extracted");
+      await mkdir(destDir, { recursive: true });
+
+      const csvPath = join(destDir, "inf_cadastral_cia_aberta.csv");
+      const csvContent = [
+        "CNPJ_CIA;DENOM_SOCIAL;DENOM_COMERC;SIT;DT_REG;DT_CANCEL;MOTIVO_CANCEL;TP_MERC;CATEG_REG",
+        "33.000.167/0001-01;PETROLEO BRASILEIRO S.A. PETROBRAS;PETROBRAS;ATIVA;1977-09-27;;;BOLSA;CAT A",
+      ].join("\n");
+
+      await writeFile(csvPath, csvContent, "utf-8");
+
+      vi.mocked(download).mockResolvedValue(csvPath);
+
+      const result = await mercado.cvmAdministradores();
+      expect(result).toHaveLength(1);
+      expect(result[0]?.CNPJ_CIA).toBe("33.000.167/0001-01");
+      expect(result[0]?.DENOM_SOCIAL).toBe("PETROLEO BRASILEIRO S.A. PETROBRAS");
+      expect(result[0]?.SIT).toBe("ATIVA");
+      expect(result[0]?.TP_MERC).toBe("BOLSA");
+
+      expect(download).toHaveBeenCalledWith(
+        "https://dados.cvm.gov.br/dados/CIA_ABERTA/CAD/DADOS/inf_cadastral_cia_aberta.csv",
+        expect.objectContaining({
+          destDir: expect.stringContaining("cvm-administradores"),
+          filename: "inf_cadastral_cia_aberta.csv",
+        }),
+      );
+    });
+
+    it("uses cached data when available", async () => {
+      const { download } = await import("../../src/download");
+
+      const destDir = join(TEST_CACHE_DIR, "cvm-administradores", "extracted");
+      await mkdir(destDir, { recursive: true });
+
+      const csvContent = "CNPJ_CIA;DENOM_SOCIAL;SIT\n33.000.167/0001-01;PETROBRAS;ATIVA\n";
+      await writeFile(join(destDir, "inf_cadastral_cia_aberta.csv"), csvContent, "utf-8");
+
+      await cache.put("cvm-administradores", destDir);
+
+      const result = await mercado.cvmAdministradores();
+      expect(result).toHaveLength(1);
+      expect(result[0]?.DENOM_SOCIAL).toBe("PETROBRAS");
+
+      expect(download).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("cvmFatosRelevantes", () => {
+    it("downloads year-specific CSV and parses it", async () => {
+      const { download } = await import("../../src/download");
+
+      const destDir = join(TEST_CACHE_DIR, "cvm-fatos-2023", "extracted");
+      await mkdir(destDir, { recursive: true });
+
+      const csvPath = join(destDir, "ipe_cia_aberta_2023.csv");
+      const csvContent = [
+        "CNPJ_CIA;DENOM_CIA;DT_REFER;LINK_DOC;TP_DOC;ASSUNTO",
+        "33.000.167/0001-01;PETROBRAS;2023-06-15;https://example.com/doc;Fato Relevante;Descoberta de novo poco",
+      ].join("\n");
+
+      await writeFile(csvPath, csvContent, "utf-8");
+
+      vi.mocked(download).mockResolvedValue(csvPath);
+
+      const result = await mercado.cvmFatosRelevantes({ ano: 2023 });
+      expect(result).toHaveLength(1);
+      expect(result[0]?.CNPJ_CIA).toBe("33.000.167/0001-01");
+      expect(result[0]?.DENOM_CIA).toBe("PETROBRAS");
+      expect(result[0]?.TP_DOC).toBe("Fato Relevante");
+      expect(result[0]?.ASSUNTO).toBe("Descoberta de novo poco");
+
+      expect(download).toHaveBeenCalledWith(
+        "https://dados.cvm.gov.br/dados/CIA_ABERTA/DOC/IPE/DADOS/ipe_cia_aberta_2023.csv",
+        expect.objectContaining({
+          destDir: expect.stringContaining("cvm-fatos-2023"),
+          filename: "ipe_cia_aberta_2023.csv",
+        }),
+      );
+    });
+
+    it("uses cached data when available", async () => {
+      const { download } = await import("../../src/download");
+
+      const destDir = join(TEST_CACHE_DIR, "cvm-fatos-2023", "extracted");
+      await mkdir(destDir, { recursive: true });
+
+      const csvContent = "CNPJ_CIA;DENOM_CIA;TP_DOC\n33.000.167/0001-01;PETROBRAS;Fato Relevante\n";
+      await writeFile(join(destDir, "ipe_cia_aberta_2023.csv"), csvContent, "utf-8");
+
+      await cache.put("cvm-fatos-2023", destDir);
+
+      const result = await mercado.cvmFatosRelevantes({ ano: 2023 });
+      expect(result).toHaveLength(1);
+      expect(result[0]?.DENOM_CIA).toBe("PETROBRAS");
+
+      expect(download).not.toHaveBeenCalled();
+    });
+
+    it("validates ano parameter", async () => {
+      await expect(mercado.cvmFatosRelevantes({ ano: 2009 })).rejects.toThrow(BVValidationError);
+    });
+  });
+
+  describe("b3Cotacoes", () => {
+    it("downloads ZIP, extracts, and parses CSV with latin1 encoding", async () => {
+      const { download, extractZip } = await import("../../src/download");
+
+      const extractDir = join(TEST_CACHE_DIR, "b3-cotacoes-2023", "extracted");
+      await mkdir(extractDir, { recursive: true });
+
+      const csvContent = [
+        "DATA;CODBDI;CODNEG;TPMERC;NOMRES;PREABE;PREMAX;PREMIN;PREULT;TOTNEG;QUATOT;VOLTOT",
+        "20230102;02;PETR4;010;PETROBRAS PN;25.50;26.10;25.30;25.90;45231;1500000;38500000",
+      ].join("\n");
+
+      await writeFile(join(extractDir, "COTAHIST_A2023.csv"), csvContent, "latin1");
+
+      vi.mocked(download).mockResolvedValue(join(TEST_CACHE_DIR, "b3-cotacoes-2023", "fake.zip"));
+      vi.mocked(extractZip).mockResolvedValue([join(extractDir, "COTAHIST_A2023.csv")]);
+
+      const result = await mercado.b3Cotacoes({ ano: 2023 });
+      expect(result).toHaveLength(1);
+      expect(result[0]?.DATA).toBe("20230102");
+      expect(result[0]?.CODNEG).toBe("PETR4");
+      expect(result[0]?.NOMRES).toBe("PETROBRAS PN");
+      expect(result[0]?.PREABE).toBe("25.50");
+      expect(result[0]?.PREULT).toBe("25.90");
+      expect(result[0]?.TOTNEG).toBe("45231");
+
+      expect(download).toHaveBeenCalledWith(
+        "https://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_A2023.ZIP",
+        expect.objectContaining({
+          destDir: expect.stringContaining("b3-cotacoes-2023"),
+        }),
+      );
+    });
+
+    it("uses cached data when available", async () => {
+      const { download, extractZip } = await import("../../src/download");
+
+      const extractDir = join(TEST_CACHE_DIR, "b3-cotacoes-2023", "extracted");
+      await mkdir(extractDir, { recursive: true });
+
+      const csvContent = "DATA;CODNEG;PREULT\n20230102;PETR4;25.90\n";
+      await writeFile(join(extractDir, "COTAHIST_A2023.csv"), csvContent, "latin1");
+
+      await cache.put("b3-cotacoes-2023", extractDir);
+
+      const result = await mercado.b3Cotacoes({ ano: 2023 });
+      expect(result).toHaveLength(1);
+      expect(result[0]?.CODNEG).toBe("PETR4");
+
+      expect(download).not.toHaveBeenCalled();
+      expect(extractZip).not.toHaveBeenCalled();
+    });
+
+    it("validates ano parameter", async () => {
+      await expect(mercado.b3Cotacoes({ ano: 2009 })).rejects.toThrow(BVValidationError);
+    });
+  });
+
   describe("validation", () => {
     it("rejects ano before 2010", async () => {
       await expect(mercado.dfp({ ano: 2009 })).rejects.toThrow(BVValidationError);

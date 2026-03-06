@@ -50,6 +50,7 @@ export class PrevidenciaSource extends Source {
     this.cache = config?.cache ?? getDefaultCache();
   }
 
+  /** Download and parse social security benefits data for a given year. */
   async beneficios(params: PrevidenciaDownloadParams): Promise<BeneficioConcedido[]> {
     this.validateAno(params.ano);
 
@@ -74,6 +75,7 @@ export class PrevidenciaSource extends Source {
     });
   }
 
+  /** Download and parse the PREVIC pension fund registry. */
   async fundosPensao(): Promise<FundoPensao[]> {
     const cacheKey = "prev-fundos-pensao";
     const cached = await this.cache.get(cacheKey);
@@ -116,7 +118,7 @@ export class PrevidenciaSource extends Source {
     if (!Number.isInteger(ano) || ano < 2010 || ano > new Date().getFullYear()) {
       throw new BVValidationError(
         "ano",
-        `deve ser inteiro entre 2010 e ${new Date().getFullYear()}`,
+        `must be an integer between 2010 and ${new Date().getFullYear()}`,
         "previdencia",
       );
     }

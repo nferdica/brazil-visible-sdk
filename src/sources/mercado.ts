@@ -134,6 +134,45 @@ export interface FundoInvestimento {
   [key: string]: string;
 }
 
+export interface CvmAdministrador {
+  CNPJ_CIA: string;
+  DENOM_SOCIAL: string;
+  DENOM_COMERC: string;
+  SIT: string;
+  DT_REG: string;
+  DT_CANCEL: string;
+  MOTIVO_CANCEL: string;
+  TP_MERC: string;
+  CATEG_REG: string;
+  [key: string]: string;
+}
+
+export interface CvmFatoRelevante {
+  CNPJ_CIA: string;
+  DENOM_CIA: string;
+  DT_REFER: string;
+  LINK_DOC: string;
+  TP_DOC: string;
+  ASSUNTO: string;
+  [key: string]: string;
+}
+
+export interface B3Cotacao {
+  DATA: string;
+  CODBDI: string;
+  CODNEG: string;
+  TPMERC: string;
+  NOMRES: string;
+  PREABE: string;
+  PREMAX: string;
+  PREMIN: string;
+  PREULT: string;
+  TOTNEG: string;
+  QUATOT: string;
+  VOLTOT: string;
+  [key: string]: string;
+}
+
 // ── URL Builders ──────────────────────────────────────────────────
 
 const CVM_BASE = "https://dados.cvm.gov.br/dados";
@@ -154,6 +193,18 @@ function cvmFundosUrl(): string {
   return `${CVM_BASE}/FI/CAD/DADOS/cad_fi.csv`;
 }
 
+function cvmAdministradoresUrl(): string {
+  return `${CVM_BASE}/CIA_ABERTA/CAD/DADOS/inf_cadastral_cia_aberta.csv`;
+}
+
+function cvmFatosRelevantesUrl(ano: number): string {
+  return `${CVM_BASE}/CIA_ABERTA/DOC/IPE/DADOS/ipe_cia_aberta_${ano}.csv`;
+}
+
+function b3CotacoesUrl(ano: number): string {
+  return `https://bvmf.bmfbovespa.com.br/InstDados/SerHist/COTAHIST_A${ano}.ZIP`;
+}
+
 // ── Source ──────────────────────────────────────────────────────────
 
 export class MercadoSource extends Source {
@@ -169,6 +220,7 @@ export class MercadoSource extends Source {
     this.cache = config?.cache ?? getDefaultCache();
   }
 
+  /** Download and parse annual financial statements (DFP) from CVM. */
   async dfp(params: CvmYearParams): Promise<DfpItem[]> {
     this.validateAno(params.ano);
     const url = cvmDfpUrl(params.ano);
@@ -176,6 +228,7 @@ export class MercadoSource extends Source {
     return this.downloadZipAndParse<DfpItem>(url, cacheKey);
   }
 
+  /** Download and parse quarterly financial statements (ITR) from CVM. */
   async itr(params: CvmYearParams): Promise<ItrItem[]> {
     this.validateAno(params.ano);
     const url = cvmItrUrl(params.ano);
@@ -183,14 +236,45 @@ export class MercadoSource extends Source {
     return this.downloadZipAndParse<ItrItem>(url, cacheKey);
   }
 
+  /** Download and parse the CVM registry of publicly traded companies. */
   async ciasAbertas(): Promise<CiaAberta[]> {
     const cacheKey = "cvm-cias-abertas";
     return this.downloadCsvAndParse<CiaAberta>(cvmCiaAbertaUrl(), cacheKey, "cad_cia_aberta.csv");
   }
 
+  /** Download and parse the CVM registry of investment funds. */
   async fundos(): Promise<FundoInvestimento[]> {
     const cacheKey = "cvm-fundos";
     return this.downloadCsvAndParse<FundoInvestimento>(cvmFundosUrl(), cacheKey, "cad_fi.csv");
+  }
+
+  /** Download and parse CVM company administrators registry data. */
+  async cvmAdministradores(): Promise<CvmAdministrador[]> {
+    const cacheKey = "cvm-administradores";
+    return this.downloadCsvAndParse<CvmAdministrador>(
+      cvmAdministradoresUrl(),
+      cacheKey,
+      "inf_cadastral_cia_aberta.csv",
+    );
+  }
+
+  /** Download and parse material fact disclosures from CVM for a given year. */
+  async cvmFatosRelevantes(params: CvmYearParams): Promise<CvmFatoRelevante[]> {
+    this.validateAno(params.ano);
+    const cacheKey = `cvm-fatos-${params.ano}`;
+    return this.downloadCsvAndParse<CvmFatoRelevante>(
+      cvmFatosRelevantesUrl(params.ano),
+      cacheKey,
+      `ipe_cia_aberta_${params.ano}.csv`,
+    );
+  }
+
+  /** Download and parse B3 stock exchange historical quotes for a given year. */
+  async b3Cotacoes(params: CvmYearParams): Promise<B3Cotacao[]> {
+    this.validateAno(params.ano);
+    const url = b3CotacoesUrl(params.ano);
+    const cacheKey = `b3-cotacoes-${params.ano}`;
+    return this.downloadZipAndParse<B3Cotacao>(url, cacheKey, "latin1");
   }
 
   // ── Private Helpers ──────────────────────────────────────────
@@ -198,10 +282,11 @@ export class MercadoSource extends Source {
   private async downloadZipAndParse<T extends Record<string, string>>(
     url: string,
     cacheKey: string,
+    encoding: BufferEncoding = "utf-8",
   ): Promise<T[]> {
     const cached = await this.cache.get(cacheKey);
     if (cached) {
-      return this.parseCvmCsvDir<T>(cached);
+      return this.parseCsvDir<T>(cached, encoding);
     }
 
     const zipPath = await download(url, {
@@ -213,7 +298,7 @@ export class MercadoSource extends Source {
     await extractZip(zipPath, extractDir);
     await this.cache.put(cacheKey, extractDir);
 
-    return this.parseCvmCsvDir<T>(extractDir);
+    return this.parseCsvDir<T>(extractDir, encoding);
   }
 
   private async downloadCsvAndParse<T extends Record<string, string>>(
@@ -223,7 +308,7 @@ export class MercadoSource extends Source {
   ): Promise<T[]> {
     const cached = await this.cache.get(cacheKey);
     if (cached) {
-      return this.parseCvmCsvDir<T>(cached);
+      return this.parseCsvDir<T>(cached, "utf-8");
     }
 
     const destDir = join(this.cache.getCacheDir(), cacheKey, "extracted");
@@ -240,7 +325,10 @@ export class MercadoSource extends Source {
     });
   }
 
-  private async parseCvmCsvDir<T extends Record<string, string>>(dir: string): Promise<T[]> {
+  private async parseCsvDir<T extends Record<string, string>>(
+    dir: string,
+    encoding: BufferEncoding = "utf-8",
+  ): Promise<T[]> {
     const { readdir } = await import("node:fs/promises");
     const entries = await readdir(dir);
 
@@ -251,7 +339,7 @@ export class MercadoSource extends Source {
     for (const csvFile of csvFiles) {
       const records = await parseCsvFile<T>(join(dir, csvFile), {
         delimiter: ";",
-        encoding: "utf-8",
+        encoding,
       });
       allRecords.push(...records);
     }

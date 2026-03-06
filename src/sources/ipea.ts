@@ -53,8 +53,9 @@ interface ODataResponse<T> {
 
 export class IpeaSource extends Source {
   readonly name = "IPEA";
-  readonly baseUrl = "http://ipeadata.gov.br/api/odata4";
+  readonly baseUrl = "https://ipeadata.gov.br/api/odata4";
 
+  /** Fetch time series values from IPEA's macroeconomic database. */
   async series(params: IpeaSeriesParams): Promise<IpeaValor[]> {
     const queryParams: Record<string, string | number | undefined> = {
       $format: "json",
@@ -78,6 +79,7 @@ export class IpeaSource extends Source {
     return response.value;
   }
 
+  /** Fetch metadata for IPEA series, optionally filtered by series code. */
   async metadados(params?: IpeaMetadadosParams): Promise<IpeaMetadado[]> {
     if (params?.codigo) {
       const response = await this.client.get<IpeaMetadado & { "@odata.context": string }>(
