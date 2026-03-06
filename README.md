@@ -119,7 +119,7 @@ configure({
 ## Desenvolvimento
 
 ```bash
-git clone git@github.com:brazilvisible/brazil-visible-sdk.git
+git clone git@github.com:nferdica/brazil-visible-sdk.git
 cd brazil-visible-sdk
 npm install
 npm run build

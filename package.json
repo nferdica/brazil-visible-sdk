@@ -54,10 +54,10 @@
   "sideEffects": true,
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/brazilvisible/brazil-visible-sdk.git"
+    "url": "git+https://github.com/nferdica/brazil-visible-sdk.git"
   },
   "bugs": {
-    "url": "https://github.com/brazilvisible/brazil-visible-sdk/issues"
+    "url": "https://github.com/nferdica/brazil-visible-sdk/issues"
   },
   "homepage": "https://brazilvisible.org",
   "engines": {
