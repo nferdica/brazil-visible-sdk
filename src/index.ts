@@ -30,12 +30,36 @@ export type {
   NomesRankingParams,
   NomeRanking,
 } from "./sources/ibge";
+export { TesouroSource } from "./sources/tesouro";
+export type {
+  EntesParams,
+  Ente,
+  RreoParams,
+  RreoItem,
+  RgfParams,
+  RgfItem,
+} from "./sources/tesouro";
+export { IpeaSource } from "./sources/ipea";
+export type {
+  IpeaSeriesParams,
+  IpeaValor,
+  IpeaMetadadosParams,
+  IpeaMetadado,
+} from "./sources/ipea";
 
 import { BcbSource } from "./sources/bcb";
 import { IbgeSource } from "./sources/ibge";
+import { IpeaSource } from "./sources/ipea";
+import { TesouroSource } from "./sources/tesouro";
 
 /** Pre-instantiated BCB source for convenience. */
 export const bcb = new BcbSource();
 
 /** Pre-instantiated IBGE source for convenience. */
 export const ibge = new IbgeSource();
+
+/** Pre-instantiated Tesouro Nacional source for convenience. */
+export const tesouro = new TesouroSource();
+
+/** Pre-instantiated IPEA source for convenience. */
+export const ipea = new IpeaSource();

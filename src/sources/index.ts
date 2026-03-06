@@ -19,3 +19,12 @@ export type {
   NomesRankingParams,
   NomeRanking,
 } from "./ibge";
+export { TesouroSource } from "./tesouro";
+export type { EntesParams, Ente, RreoParams, RreoItem, RgfParams, RgfItem } from "./tesouro";
+export { IpeaSource } from "./ipea";
+export type {
+  IpeaSeriesParams,
+  IpeaValor,
+  IpeaMetadadosParams,
+  IpeaMetadado,
+} from "./ipea";
