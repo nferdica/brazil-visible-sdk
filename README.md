@@ -59,23 +59,23 @@ const irregulares = contratos.filter((c) => cnpjsSancionados.has(c.cnpj));
 console.log(`${irregulares.length} contratos com empresas sancionadas`);
 ```
 
-## Fontes disponiveis (22 modulos)
+## Fontes disponiveis (22 modulos, 97 metodos)
 
 ### REST APIs
 
 | Modulo | Import | Metodos | Auth |
 |--------|--------|---------|------|
-| **BCB** | `bcb` | `sgs`, `expectativas` | Nao |
+| **BCB** | `bcb` | `sgs`, `expectativas`, `ifdata` | Nao |
 | **IBGE** | `ibge` | `estados`, `municipios`, `distritos`, `regioes`, `mesorregioes`, `microrregioes`, `agregados`, `agregadosMetadados`, `nomes`, `nomesRanking` | Nao |
 | **Tesouro** | `tesouro` | `entes`, `rreo`, `rgf` | Nao |
 | **IPEA** | `ipea` | `series`, `metadados` | Nao |
 | **CGU** | `cgu` | `ceis`, `cnep`, `cepim`, `ceaf`, `contratos`, `servidores`, `emendas`, `viagens` | API Key |
 | **Seguranca** | `seguranca` | `ocorrencias`, `indicadores` | Nao |
-| **Portais** | `portais` | `buscarConjuntos`, `recursos`, `execucaoOrcamentaria` | Nao |
-| **Ambiente** | `ambiente` | `prodes`, `deter`, `focosCalor`, `ibamaMultas` | Nao |
-| **Transportes** | `transportes` | `anacVoos`, `prfAcidentes`, `denatranFrota` | Nao |
+| **Portais** | `portais` | `buscarConjuntos`, `recursos`, `baseDados`, `execucaoOrcamentaria` | Misto\*\* |
+| **Ambiente** | `ambiente` | `prodes`, `deter`, `focosCalor`, `ibamaMultas`, `car`, `unidadesConservacao`, `recursosHidricos` | Nao |
+| **Transportes** | `transportes` | `anacVoos`, `prfAcidentes`, `denatranFrota`, `dnit`, `antt` | Nao |
 | **Diarios** | `diarios` | `dou`, `doe` | Nao |
-| **Governamentais** | `governamentais` | `cadin`, `siorg`, `siape` | Nao |
+| **Governamentais** | `governamentais` | `cadin`, `siorg`, `siape` | Misto\*\* |
 | **Outros** | `outros` | `ansOperadoras`, `antaqPortos`, `ancineProjetos` | Nao |
 | **CNJ** | `cnj` | `justicaNumeros`, `datajud`\* | Varia |
 
@@ -83,22 +83,24 @@ console.log(`${irregulares.length} contratos com empresas sancionadas`);
 
 | Modulo | Import | Metodos | Formato |
 |--------|--------|---------|---------|
-| **TSE** | `tse` | `candidaturas`, `bensCandidatos`, `resultados`, `filiados` | ZIP/CSV |
-| **Receita** | `receita` | `empresas`, `estabelecimentos`, `socios`, `simplesNacional` | ZIP/CSV |
-| **Mercado/CVM** | `mercado` | `dfp`, `itr`, `ciasAbertas`, `fundosInvestimento` | ZIP/CSV |
-| **INEP** | `inep` | `enem`, `censoEscolar`, `censoSuperior` | ZIP/CSV |
+| **TSE** | `tse` | `candidaturas`, `bens`, `resultados`, `filiados`, `prestacaoContas`, `eleitorado`, `boletins` | ZIP/CSV |
+| **Receita** | `receita` | `empresas`, `estabelecimentos`, `socios`, `simples` | ZIP/CSV |
+| **Mercado/CVM** | `mercado` | `dfp`, `itr`, `ciasAbertas`, `fundos`, `cvmAdministradores`, `cvmFatosRelevantes`, `b3Cotacoes` | ZIP/CSV |
+| **INEP** | `inep` | `enem`, `censoEscolar`, `censoSuperior`, `fnde` | ZIP/CSV |
 | **Trabalho** | `trabalho` | `caged`, `rais` | ZIP/CSV |
 | **Previdencia** | `previdencia` | `beneficios`, `fundosPensao` | CSV |
-| **Reguladoras** | `reguladoras` | `anatel`, `aneel`, `anp`, `anvisa` | CSV |
+| **Reguladoras** | `reguladoras` | `anatelAcessos`, `aneelTarifas`, `anpCombustiveis`, `anvisaMedicamentos` | CSV |
 
 ### Especializados
 
 | Modulo | Import | Metodos | Notas |
 |--------|--------|---------|-------|
-| **DATASUS** | `datasus` | `cnes`, `sim`, `sih` | FTP/DBC — fallback informativo |
-| **Geo** | `geo` | `municipios`, `malha`, `wmsCapabilities`, `wmsGetMap` | WMS/WFS/GeoJSON |
+| **DATASUS** | `datasus` | `cnes`, `sim`, `sih`, `sinan`, `sinasc` | FTP/DBC — fallback informativo |
+| **Geo** | `geo` | `municipios`, `malha`, `wmsCapabilities`, `wmsGetMap`, `cprm`, `incra`, `inde`, `inpeSatelite` | WMS/WFS/GeoJSON |
 
 \* `datajud` requer cadastro especial no CNJ — o metodo orienta sobre como obter acesso.
+
+\*\* `execucaoOrcamentaria` e `siape` utilizam a API do Portal da Transparencia e requerem API key da CGU.
 
 ## Configuracao
 
