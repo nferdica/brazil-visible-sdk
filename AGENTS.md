@@ -77,9 +77,7 @@ tests/
     ...
   client.test.ts
   parsers.test.ts
-examples/
-  quickstart.ts           # Exemplo minimo de uso
-  cruzamento-licitacoes-sancoes.ts  # Receita de cruzamento adaptada
+README.md                 # Documentacao com exemplos de uso
 ```
 
 ### Interface Source (base abstrata)
@@ -220,7 +218,7 @@ O SDK baixa o arquivo, descompacta, parseia CSV e retorna array tipado.
 3. `errors.ts` — Hierarquia de erros
 4. Modulos de source: `ibge.ts`, `bcb.ts`, `cgu.ts`, `tesouro.ts`, `ipea.ts`, `cnj.ts`
 5. Testes unitarios com respostas mockadas (vitest + msw)
-6. `examples/quickstart.ts`
+6. Exemplos de uso no `README.md`
 
 **Interface alvo**:
 ```typescript
