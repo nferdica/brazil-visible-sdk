@@ -30,6 +30,7 @@ export class BVClient {
     this.headers = { ...DEFAULT_HEADERS, ...options?.baseHeaders };
   }
 
+  /** Perform an HTTP GET request with automatic retry and timeout handling. */
   async get<T>(url: string, options?: RequestOptions): Promise<T> {
     const fullUrl = this.buildUrl(url, options?.params);
     const headers = { ...this.headers, ...options?.headers };

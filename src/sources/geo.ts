@@ -141,6 +141,7 @@ export class GeoSource extends Source {
   readonly name = "Dados Geoespaciais";
   readonly baseUrl = "https://servicodados.ibge.gov.br/api/v3/malhas";
 
+  /** Fetch municipality geospatial boundaries from IBGE. */
   async municipios(params?: GeoMunicipioParams): Promise<GeoMunicipio[]> {
     return this.client.get<GeoMunicipio[]>(`${this.baseUrl}/municipios`, {
       params: {
@@ -151,6 +152,7 @@ export class GeoSource extends Source {
     });
   }
 
+  /** Fetch the geospatial mesh (boundary polygon) for a given IBGE code. */
   async malha(codigoIbge: string, params?: GeoMalhaParams): Promise<GeoJsonFeatureCollection> {
     return this.client.get<GeoJsonFeatureCollection>(`${this.baseUrl}/${codigoIbge}`, {
       params: {
@@ -161,6 +163,7 @@ export class GeoSource extends Source {
     });
   }
 
+  /** Fetch WMS GetCapabilities from a geospatial service URL. */
   async wmsCapabilities(serviceUrl: string): Promise<WmsCapabilities> {
     return this.client.get<WmsCapabilities>(serviceUrl, {
       params: {
@@ -170,6 +173,7 @@ export class GeoSource extends Source {
     });
   }
 
+  /** Fetch a WMS GetMap image from a geospatial service URL. */
   async wmsGetMap(serviceUrl: string, params: WmsLayerParams): Promise<WmsGetMapResponse> {
     return this.client.get<WmsGetMapResponse>(serviceUrl, {
       params: {
@@ -207,10 +211,12 @@ export class GeoSource extends Source {
     return response.features;
   }
 
+  /** Fetch geological features from CPRM's WFS service. */
   async cprm(params: CprmParams): Promise<CprmFeature[]> {
     return this.wfsGetFeature<CprmFeature>("https://geosgb.cprm.gov.br/geoserver/wfs", params);
   }
 
+  /** Fetch land tenure features from INCRA's WFS service. */
   async incra(params: IncraParams): Promise<IncraFeature[]> {
     return this.wfsGetFeature<IncraFeature>(
       "https://acervofundiario.incra.gov.br/acervo/geoserver/wfs",
@@ -218,10 +224,12 @@ export class GeoSource extends Source {
     );
   }
 
+  /** Fetch geospatial features from INDE's national spatial data infrastructure. */
   async inde(params: IndeParams): Promise<IndeFeature[]> {
     return this.wfsGetFeature<IndeFeature>("https://inde.gov.br/geoserver/wfs", params);
   }
 
+  /** Search INPE satellite imagery catalog. */
   async inpeSatelite(params?: InpeSateliteParams): Promise<InpeImagem[]> {
     return this.client.get<InpeImagem[]>("https://www.dgi.inpe.br/catalogo/explore", {
       params: {
