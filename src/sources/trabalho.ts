@@ -99,6 +99,7 @@ export class TrabalhoSource extends Source {
     this.cache = config?.cache ?? getDefaultCache();
   }
 
+  /** Download and parse CAGED formal employment data for a given year. */
   async caged(params: TrabalhoDownloadParams): Promise<CagedItem[]> {
     this.validateAno(params.ano, 2020, "CAGED Novo");
 
@@ -108,12 +109,12 @@ export class TrabalhoSource extends Source {
       return this.parseCsvDir<CagedItem>(cached);
     }
 
-    const url = `${CAGED_HTTP_BASE}/caged_download/${params.ano}/cagedmov${params.ano}.7z`;
+    const url = `${CAGED_HTTP_BASE}/caged_download/${params.ano}/cagedmov${params.ano}.zip`;
 
     const downloadDir = join(this.cache.getCacheDir(), cacheKey);
     const filePath = await download(url, {
       destDir: downloadDir,
-      filename: `cagedmov${params.ano}.7z`,
+      filename: `cagedmov${params.ano}.zip`,
     });
 
     const extractDir = join(downloadDir, "extracted");
@@ -123,6 +124,7 @@ export class TrabalhoSource extends Source {
     return this.parseCsvDir<CagedItem>(extractDir);
   }
 
+  /** Download and parse RAIS annual social information report for a given year. */
   async rais(params: TrabalhoDownloadParams): Promise<RaisEstabelecimento[]> {
     this.validateAno(params.ano, 2002, "RAIS");
 
@@ -132,12 +134,12 @@ export class TrabalhoSource extends Source {
       return this.parseCsvDir<RaisEstabelecimento>(cached);
     }
 
-    const url = `${CAGED_HTTP_BASE}/rais_download/${params.ano}/RAIS_VINC_PUB_${params.ano}.7z`;
+    const url = `${CAGED_HTTP_BASE}/rais_download/${params.ano}/RAIS_VINC_PUB_${params.ano}.zip`;
 
     const downloadDir = join(this.cache.getCacheDir(), cacheKey);
     const filePath = await download(url, {
       destDir: downloadDir,
-      filename: `RAIS_VINC_PUB_${params.ano}.7z`,
+      filename: `RAIS_VINC_PUB_${params.ano}.zip`,
     });
 
     const extractDir = join(downloadDir, "extracted");

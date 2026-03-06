@@ -4,7 +4,7 @@
  * Execute com: npx tsx examples/quickstart.ts
  */
 
-import { bcb, cgu, configure, ibge, ipea, tesouro } from "brazil-visible";
+import { bcb, cgu, configure, ibge, ipea, tesouro } from "@bracc/sdk";
 
 async function main() {
   // ── Banco Central ────────────────────────────────────────────

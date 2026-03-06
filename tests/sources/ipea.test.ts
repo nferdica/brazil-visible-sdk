@@ -7,7 +7,7 @@ import { server } from "../helpers/setup";
 const client = new BVClient({ maxRetries: 0 });
 const ipea = new IpeaSource({ client });
 
-const BASE = "http://ipeadata.gov.br/api/odata4";
+const BASE = "https://ipeadata.gov.br/api/odata4";
 
 describe("IpeaSource", () => {
   it("has correct name and baseUrl", () => {
@@ -23,7 +23,7 @@ describe("IpeaSource", () => {
           const url = new URL(request.url);
           expect(url.searchParams.get("$format")).toBe("json");
           return HttpResponse.json({
-            "@odata.context": "http://ipeadata.gov.br/api/odata4/$metadata#ValoresSerie",
+            "@odata.context": "https://ipeadata.gov.br/api/odata4/$metadata#ValoresSerie",
             value: [
               {
                 SERCODIGO: "PRECOS12_IPCA12",
@@ -94,7 +94,7 @@ describe("IpeaSource", () => {
           expect(url.searchParams.get("$top")).toBe("10");
           expect(url.searchParams.get("$skip")).toBe("0");
           return HttpResponse.json({
-            "@odata.context": "http://ipeadata.gov.br/api/odata4/$metadata#Metadados",
+            "@odata.context": "https://ipeadata.gov.br/api/odata4/$metadata#Metadados",
             value: [
               {
                 SERCODIGO: "PRECOS12_IPCA12",
@@ -129,7 +129,7 @@ describe("IpeaSource", () => {
         http.get(`${BASE}/:odata`, ({ params }) => {
           expect(params.odata).toBe("Metadados('PRECOS12_IPCA12')");
           return HttpResponse.json({
-            "@odata.context": "http://ipeadata.gov.br/api/odata4/$metadata#Metadados/$entity",
+            "@odata.context": "https://ipeadata.gov.br/api/odata4/$metadata#Metadados/$entity",
             SERCODIGO: "PRECOS12_IPCA12",
             SERNOME: "IPCA - geral - índice (dez. 1993 = 100)",
             SERCOMENTARIO: "Comentario",

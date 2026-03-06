@@ -1,3 +1,5 @@
+import { getConfig } from "../config";
+import { BVValidationError } from "../errors";
 import { Source } from "./base";
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -78,6 +80,7 @@ export class PortaisSource extends Source {
   readonly name = "Portais de Dados Abertos";
   readonly baseUrl = "https://dados.gov.br/dados/api/publico";
 
+  /** Search open data datasets on dados.gov.br. */
   async buscarConjuntos(params?: DadosAbertosSearchParams): Promise<ConjuntoDados[]> {
     const response = await this.client.get<{ result: ConjuntoDados[] }>(
       `${this.baseUrl}/conjuntos-dados`,
@@ -94,6 +97,7 @@ export class PortaisSource extends Source {
     return response.result ?? response;
   }
 
+  /** List resources (files/APIs) for a given dataset on dados.gov.br. */
   async recursos(params: RecursoParams): Promise<Recurso[]> {
     const response = await this.client.get<{ result: Recurso[] }>(
       `${this.baseUrl}/conjuntos-dados/${params.conjuntoId}/recursos`,
@@ -101,6 +105,7 @@ export class PortaisSource extends Source {
     return response.result ?? response;
   }
 
+  /** Search datasets on Base dos Dados platform. */
   async baseDados(params?: BaseDadosParams): Promise<BaseDadosDataset[]> {
     const response = await this.client.get<{
       success: boolean;
@@ -115,10 +120,21 @@ export class PortaisSource extends Source {
     return response.result.results;
   }
 
+  /** Fetch federal budget execution data from the Transparency Portal. */
   async execucaoOrcamentaria(params?: TesouroTransparenteParams): Promise<ExecucaoOrcamentaria[]> {
+    const apiKey = getConfig().apiKeys?.cgu;
+    if (!apiKey) {
+      throw new BVValidationError(
+        "apiKey",
+        "CGU API key required for Portal da Transparencia. Configure via configure({ apiKeys: { cgu: '...' } })",
+        "portais",
+      );
+    }
+
     return this.client.get<ExecucaoOrcamentaria[]>(
       "https://api.portaldatransparencia.gov.br/api-de-dados/despesas/por-orgao",
       {
+        headers: { "chave-api-dados": apiKey },
         params: {
           ano: params?.ano,
           orgao: params?.orgao,

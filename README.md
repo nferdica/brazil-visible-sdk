@@ -7,7 +7,7 @@ Uma interface programatica unica sobre APIs REST, downloads CSV, FTP e portais d
 ## Instalacao
 
 ```bash
-npm install brazil-visible
+npm install @bracc/sdk
 ```
 
 Compativel com **Node.js >=18**, **Deno**, **Bun** e **browsers** (fontes REST).
@@ -15,7 +15,7 @@ Compativel com **Node.js >=18**, **Deno**, **Bun** e **browsers** (fontes REST).
 ## Uso rapido
 
 ```typescript
-import { bcb, ibge } from "brazil-visible";
+import { bcb, ibge } from "@bracc/sdk";
 
 // Banco Central — serie temporal SGS
 const selic = await bcb.sgs({ serie: 11, inicio: "2024-01-01", fim: "2024-12-31" });
@@ -29,7 +29,7 @@ console.log(populacao);
 ### Com autenticacao (CGU)
 
 ```typescript
-import { cgu, configure } from "brazil-visible";
+import { cgu, configure } from "@bracc/sdk";
 
 configure({ apiKeys: { cgu: "sua-chave-aqui" } });
 // ou defina a env var: export BV_CGU_API_KEY=sua-chave-aqui
@@ -41,7 +41,7 @@ const sancionadas = await cgu.ceis();
 ### Download de dados (TSE, Receita, etc.)
 
 ```typescript
-import { tse, receita } from "brazil-visible";
+import { tse, receita } from "@bracc/sdk";
 
 // TSE — candidaturas (baixa ZIP, descompacta, retorna array tipado)
 const candidatos = await tse.candidaturas({ ano: 2022, estado: "SP" });
@@ -54,7 +54,7 @@ const empresas = await receita.empresas({ chunk: 0 });
 ### Cruzamento de dados
 
 ```typescript
-import { cgu } from "brazil-visible";
+import { cgu } from "@bracc/sdk";
 
 // Empresas sancionadas que ainda vencem licitacoes
 const sancionadas = await cgu.ceis();
@@ -109,7 +109,7 @@ console.log(`${irregulares.length} contratos com empresas sancionadas`);
 ## Configuracao
 
 ```typescript
-import { configure } from "brazil-visible";
+import { configure } from "@bracc/sdk";
 
 configure({
   timeout: 60000,        // timeout HTTP em ms (default: 30000)

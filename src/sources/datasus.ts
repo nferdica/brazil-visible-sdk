@@ -107,6 +107,7 @@ export class DataSusSource extends Source {
     this.cache = config?.cache ?? getDefaultCache();
   }
 
+  /** Download and parse CNES health facility registry data. */
   async cnes(params: DataSusParams): Promise<CnesEstabelecimento[]> {
     this.validateAno(params.ano);
     const uf = params.uf?.toUpperCase() ?? "BR";
@@ -287,7 +288,7 @@ export class DataSusSource extends Source {
     if (!Number.isInteger(ano) || ano < 1996 || ano > new Date().getFullYear()) {
       throw new BVValidationError(
         "ano",
-        `deve ser inteiro entre 1996 e ${new Date().getFullYear()}`,
+        `must be an integer between 1996 and ${new Date().getFullYear()}`,
         "datasus",
       );
     }

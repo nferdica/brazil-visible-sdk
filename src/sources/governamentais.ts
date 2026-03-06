@@ -1,3 +1,5 @@
+import { getConfig } from "../config";
+import { BVValidationError } from "../errors";
 import { Source } from "./base";
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -58,6 +60,7 @@ export class GovernamentaisSource extends Source {
   readonly name = "APIs Governamentais";
   readonly baseUrl = "https://dados.gov.br/dados/api/publico";
 
+  /** Query the CADIN federal debtors registry. */
   async cadin(params?: CadinParams): Promise<CadinItem[]> {
     return this.client.get<CadinItem[]>(`${this.baseUrl}/cadin`, {
       params: {
@@ -68,6 +71,7 @@ export class GovernamentaisSource extends Source {
     });
   }
 
+  /** Query the SIORG federal organizational structure registry. */
   async siorg(params?: SiorgParams): Promise<SiorgOrgao[]> {
     return this.client.get<SiorgOrgao[]>(
       "https://estruturaorganizacional.dados.gov.br/api/unidades",
@@ -81,10 +85,21 @@ export class GovernamentaisSource extends Source {
     );
   }
 
+  /** Query SIAPE federal civil servant payroll data. */
   async siape(params?: SiapeServidorParams): Promise<SiapeServidor[]> {
+    const apiKey = getConfig().apiKeys?.cgu;
+    if (!apiKey) {
+      throw new BVValidationError(
+        "apiKey",
+        "CGU API key required for Portal da Transparencia. Configure via configure({ apiKeys: { cgu: '...' } })",
+        "governamentais",
+      );
+    }
+
     return this.client.get<SiapeServidor[]>(
       "https://api.portaldatransparencia.gov.br/api-de-dados/servidores",
       {
+        headers: { "chave-api-dados": apiKey },
         params: {
           orgaoServidores: params?.orgao,
           cargo: params?.cargo,

@@ -92,6 +92,7 @@ export class TesouroSource extends Source {
   readonly name = "Tesouro Nacional";
   readonly baseUrl = "https://apidatalake.tesouro.gov.br/ords/siconfi/tt";
 
+  /** List government entities registered in SICONFI. */
   async entes(params?: EntesParams): Promise<Ente[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 
@@ -112,6 +113,7 @@ export class TesouroSource extends Source {
     return response.items;
   }
 
+  /** Fetch Summarized Budget Execution Report (RREO) data from SICONFI. */
   async rreo(params: RreoParams): Promise<RreoItem[]> {
     const queryParams: Record<string, string | number | undefined> = {
       an_exercicio: params.exercicio,
@@ -131,6 +133,7 @@ export class TesouroSource extends Source {
     return response.items;
   }
 
+  /** Fetch Fiscal Management Report (RGF) data from SICONFI. */
   async rgf(params: RgfParams): Promise<RgfItem[]> {
     const queryParams: Record<string, string | number | undefined> = {
       an_exercicio: params.exercicio,

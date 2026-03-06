@@ -194,7 +194,7 @@ function cvmFundosUrl(): string {
 }
 
 function cvmAdministradoresUrl(): string {
-  return `${CVM_BASE}/CIA_ABERTA/CAD/DADOS/cad_cia_aberta.csv`;
+  return `${CVM_BASE}/CIA_ABERTA/CAD/DADOS/inf_cadastral_cia_aberta.csv`;
 }
 
 function cvmFatosRelevantesUrl(ano: number): string {
@@ -220,6 +220,7 @@ export class MercadoSource extends Source {
     this.cache = config?.cache ?? getDefaultCache();
   }
 
+  /** Download and parse annual financial statements (DFP) from CVM. */
   async dfp(params: CvmYearParams): Promise<DfpItem[]> {
     this.validateAno(params.ano);
     const url = cvmDfpUrl(params.ano);
@@ -227,6 +228,7 @@ export class MercadoSource extends Source {
     return this.downloadZipAndParse<DfpItem>(url, cacheKey);
   }
 
+  /** Download and parse quarterly financial statements (ITR) from CVM. */
   async itr(params: CvmYearParams): Promise<ItrItem[]> {
     this.validateAno(params.ano);
     const url = cvmItrUrl(params.ano);
@@ -234,25 +236,29 @@ export class MercadoSource extends Source {
     return this.downloadZipAndParse<ItrItem>(url, cacheKey);
   }
 
+  /** Download and parse the CVM registry of publicly traded companies. */
   async ciasAbertas(): Promise<CiaAberta[]> {
     const cacheKey = "cvm-cias-abertas";
     return this.downloadCsvAndParse<CiaAberta>(cvmCiaAbertaUrl(), cacheKey, "cad_cia_aberta.csv");
   }
 
+  /** Download and parse the CVM registry of investment funds. */
   async fundos(): Promise<FundoInvestimento[]> {
     const cacheKey = "cvm-fundos";
     return this.downloadCsvAndParse<FundoInvestimento>(cvmFundosUrl(), cacheKey, "cad_fi.csv");
   }
 
+  /** Download and parse CVM company administrators registry data. */
   async cvmAdministradores(): Promise<CvmAdministrador[]> {
     const cacheKey = "cvm-administradores";
     return this.downloadCsvAndParse<CvmAdministrador>(
       cvmAdministradoresUrl(),
       cacheKey,
-      "cad_cia_aberta.csv",
+      "inf_cadastral_cia_aberta.csv",
     );
   }
 
+  /** Download and parse material fact disclosures from CVM for a given year. */
   async cvmFatosRelevantes(params: CvmYearParams): Promise<CvmFatoRelevante[]> {
     this.validateAno(params.ano);
     const cacheKey = `cvm-fatos-${params.ano}`;
@@ -263,6 +269,7 @@ export class MercadoSource extends Source {
     );
   }
 
+  /** Download and parse B3 stock exchange historical quotes for a given year. */
   async b3Cotacoes(params: CvmYearParams): Promise<B3Cotacao[]> {
     this.validateAno(params.ano);
     const url = b3CotacoesUrl(params.ano);

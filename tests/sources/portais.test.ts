@@ -1,6 +1,7 @@
 import { http, HttpResponse } from "msw";
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { BVClient } from "../../src/client";
+import { configure, resetConfig } from "../../src/config";
 import { PortaisSource } from "../../src/sources/portais";
 import { server } from "../helpers/setup";
 
@@ -133,6 +134,14 @@ describe("PortaisSource", () => {
   });
 
   describe("execucaoOrcamentaria", () => {
+    beforeEach(() => {
+      configure({ apiKeys: { cgu: "test-api-key" } });
+    });
+
+    afterEach(() => {
+      resetConfig();
+    });
+
     it("returns budget execution data", async () => {
       server.use(
         http.get(

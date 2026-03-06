@@ -176,7 +176,7 @@ export const tse = new TseSource();
 export const receita = new ReceitaSource();
 
 /** Pre-instantiated INEP source for convenience. Downloads data on first call. */
-export const inepData = new InepSource();
+export const inep = new InepSource();
 
 /** Pre-instantiated Trabalho source for convenience. Downloads data on first call. */
 export const trabalho = new TrabalhoSource();

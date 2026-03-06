@@ -184,7 +184,7 @@ describe("MercadoSource", () => {
       const destDir = join(TEST_CACHE_DIR, "cvm-administradores", "extracted");
       await mkdir(destDir, { recursive: true });
 
-      const csvPath = join(destDir, "cad_cia_aberta.csv");
+      const csvPath = join(destDir, "inf_cadastral_cia_aberta.csv");
       const csvContent = [
         "CNPJ_CIA;DENOM_SOCIAL;DENOM_COMERC;SIT;DT_REG;DT_CANCEL;MOTIVO_CANCEL;TP_MERC;CATEG_REG",
         "33.000.167/0001-01;PETROLEO BRASILEIRO S.A. PETROBRAS;PETROBRAS;ATIVA;1977-09-27;;;BOLSA;CAT A",
@@ -202,10 +202,10 @@ describe("MercadoSource", () => {
       expect(result[0]?.TP_MERC).toBe("BOLSA");
 
       expect(download).toHaveBeenCalledWith(
-        "https://dados.cvm.gov.br/dados/CIA_ABERTA/CAD/DADOS/cad_cia_aberta.csv",
+        "https://dados.cvm.gov.br/dados/CIA_ABERTA/CAD/DADOS/inf_cadastral_cia_aberta.csv",
         expect.objectContaining({
           destDir: expect.stringContaining("cvm-administradores"),
-          filename: "cad_cia_aberta.csv",
+          filename: "inf_cadastral_cia_aberta.csv",
         }),
       );
     });
@@ -217,7 +217,7 @@ describe("MercadoSource", () => {
       await mkdir(destDir, { recursive: true });
 
       const csvContent = "CNPJ_CIA;DENOM_SOCIAL;SIT\n33.000.167/0001-01;PETROBRAS;ATIVA\n";
-      await writeFile(join(destDir, "cad_cia_aberta.csv"), csvContent, "utf-8");
+      await writeFile(join(destDir, "inf_cadastral_cia_aberta.csv"), csvContent, "utf-8");
 
       await cache.put("cvm-administradores", destDir);
 

@@ -168,11 +168,13 @@ export class InepSource extends Source {
     this.cache = config?.cache ?? getDefaultCache();
   }
 
+  /** Download and parse ENEM exam microdata for a given year. */
   async enem(params: InepDownloadParams): Promise<EnemMicrodado[]> {
     this.validateAno(params.ano, 1998, "ENEM");
     return this.downloadAndParse<EnemMicrodado>(enemUrl(params.ano), `inep-enem-${params.ano}`);
   }
 
+  /** Download and parse School Census microdata for a given year. */
   async censoEscolar(params: InepDownloadParams): Promise<CensoEscolarEscola[]> {
     this.validateAno(params.ano, 2007, "Censo Escolar");
     return this.downloadAndParse<CensoEscolarEscola>(
@@ -181,6 +183,7 @@ export class InepSource extends Source {
     );
   }
 
+  /** Download and parse Higher Education Census microdata for a given year. */
   async censoSuperior(params: InepDownloadParams): Promise<CensoSuperiorIes[]> {
     this.validateAno(params.ano, 2009, "Censo Superior");
     return this.downloadAndParse<CensoSuperiorIes>(
@@ -189,6 +192,7 @@ export class InepSource extends Source {
     );
   }
 
+  /** Download and parse FNDE financial transfer data. */
   async fnde(): Promise<FndeRepasse[]> {
     const cacheKey = "inep-fnde";
     const cached = await this.cache.get(cacheKey);

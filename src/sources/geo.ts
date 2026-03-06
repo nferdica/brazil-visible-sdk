@@ -24,6 +24,30 @@ export interface GeoMunicipio {
   [key: string]: unknown;
 }
 
+export interface GeoJsonGeometry {
+  type: string;
+  coordinates: unknown;
+}
+
+export interface GeoJsonFeature {
+  type: "Feature";
+  properties: Record<string, unknown>;
+  geometry: GeoJsonGeometry;
+  [key: string]: unknown;
+}
+
+export interface GeoJsonFeatureCollection {
+  type: "FeatureCollection";
+  features: GeoJsonFeature[];
+  [key: string]: unknown;
+}
+
+export interface WmsGetMapResponse {
+  url: string;
+  contentType: string;
+  [key: string]: unknown;
+}
+
 export interface GeoMalhaParams {
   resolucao?: number;
   qualidade?: string;
@@ -127,8 +151,8 @@ export class GeoSource extends Source {
     });
   }
 
-  async malha(codigoIbge: string, params?: GeoMalhaParams): Promise<unknown> {
-    return this.client.get(`${this.baseUrl}/${codigoIbge}`, {
+  async malha(codigoIbge: string, params?: GeoMalhaParams): Promise<GeoJsonFeatureCollection> {
+    return this.client.get<GeoJsonFeatureCollection>(`${this.baseUrl}/${codigoIbge}`, {
       params: {
         resolucao: params?.resolucao,
         qualidade: params?.qualidade,
@@ -146,8 +170,8 @@ export class GeoSource extends Source {
     });
   }
 
-  async wmsGetMap(serviceUrl: string, params: WmsLayerParams): Promise<unknown> {
-    return this.client.get(serviceUrl, {
+  async wmsGetMap(serviceUrl: string, params: WmsLayerParams): Promise<WmsGetMapResponse> {
+    return this.client.get<WmsGetMapResponse>(serviceUrl, {
       params: {
         service: "WMS",
         request: "GetMap",

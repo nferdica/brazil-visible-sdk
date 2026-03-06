@@ -196,6 +196,7 @@ export class CguSource extends Source {
     };
   }
 
+  /** Query the CEIS registry of sanctioned companies. */
   async ceis(params?: CeisParams): Promise<CeisItem[]> {
     return this.client.get<CeisItem[]>(`${this.baseUrl}/ceis`, {
       headers: this.getAuthHeaders(),
@@ -208,6 +209,7 @@ export class CguSource extends Source {
     });
   }
 
+  /** Query the CNEP registry of penalized companies. */
   async cnep(params?: CnepParams): Promise<CnepItem[]> {
     return this.client.get<CnepItem[]>(`${this.baseUrl}/cnep`, {
       headers: this.getAuthHeaders(),
@@ -220,6 +222,7 @@ export class CguSource extends Source {
     });
   }
 
+  /** Query the CEPIM registry of entities barred from federal transfers. */
   async cepim(params?: CepimParams): Promise<CepimItem[]> {
     return this.client.get<CepimItem[]>(`${this.baseUrl}/cepim`, {
       headers: this.getAuthHeaders(),
@@ -232,6 +235,7 @@ export class CguSource extends Source {
     });
   }
 
+  /** Query federal government contracts from the Transparency Portal. */
   async contratos(params?: ContratosParams): Promise<ContratoItem[]> {
     return this.client.get<ContratoItem[]>(`${this.baseUrl}/contratos`, {
       headers: this.getAuthHeaders(),
@@ -245,6 +249,7 @@ export class CguSource extends Source {
     });
   }
 
+  /** Query federal civil servants from the Transparency Portal. */
   async servidores(params?: ServidoresParams): Promise<ServidorItem[]> {
     return this.client.get<ServidorItem[]>(`${this.baseUrl}/servidores`, {
       headers: this.getAuthHeaders(),
@@ -256,6 +261,7 @@ export class CguSource extends Source {
     });
   }
 
+  /** Query the CEAF registry of expelled federal employees. */
   async ceaf(params?: CeafParams): Promise<CeafItem[]> {
     return this.client.get<CeafItem[]>(`${this.baseUrl}/ceaf`, {
       headers: this.getAuthHeaders(),
@@ -268,6 +274,7 @@ export class CguSource extends Source {
     });
   }
 
+  /** Query parliamentary budget amendments from the Transparency Portal. */
   async emendas(params?: EmendasParams): Promise<EmendaItem[]> {
     return this.client.get<EmendaItem[]>(`${this.baseUrl}/emendas`, {
       headers: this.getAuthHeaders(),
@@ -280,6 +287,7 @@ export class CguSource extends Source {
     });
   }
 
+  /** Query government travel expenses from the Transparency Portal. */
   async viagens(params?: ViagensParams): Promise<ViagemItem[]> {
     return this.client.get<ViagemItem[]>(`${this.baseUrl}/viagens`, {
       headers: this.getAuthHeaders(),

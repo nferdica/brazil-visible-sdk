@@ -4,9 +4,3 @@ export interface RequestOptions {
   timeout?: number;
   signal?: AbortSignal;
 }
-
-export interface BVClientConfig {
-  baseHeaders?: Record<string, string>;
-  timeout?: number;
-  maxRetries?: number;
-}

@@ -175,6 +175,7 @@ export class ReceitaSource extends Source {
     this.cache = config?.cache ?? getDefaultCache();
   }
 
+  /** Download and parse the Receita Federal company registry data. */
   async empresas(params?: ReceitaDownloadParams): Promise<Empresa[]> {
     const chunk = params?.chunk ?? 0;
     this.validateChunk(chunk);
@@ -182,6 +183,7 @@ export class ReceitaSource extends Source {
     return this.downloadAndParse<Empresa>(url, `receita-empresas-${chunk}`, EMPRESA_COLUMNS);
   }
 
+  /** Download and parse the Receita Federal establishment registry data. */
   async estabelecimentos(params?: ReceitaDownloadParams): Promise<Estabelecimento[]> {
     const chunk = params?.chunk ?? 0;
     this.validateChunk(chunk);
@@ -193,6 +195,7 @@ export class ReceitaSource extends Source {
     );
   }
 
+  /** Download and parse the Receita Federal business partners data. */
   async socios(params?: ReceitaDownloadParams): Promise<Socio[]> {
     const chunk = params?.chunk ?? 0;
     this.validateChunk(chunk);
@@ -200,6 +203,7 @@ export class ReceitaSource extends Source {
     return this.downloadAndParse<Socio>(url, `receita-socios-${chunk}`, SOCIO_COLUMNS);
   }
 
+  /** Download and parse the Simples Nacional and MEI registry data. */
   async simples(): Promise<SimplesNacional[]> {
     const url = receitaZipUrl("Simples");
     return this.downloadAndParse<SimplesNacional>(url, "receita-simples", SIMPLES_COLUMNS);

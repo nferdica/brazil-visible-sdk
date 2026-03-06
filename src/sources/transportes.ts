@@ -113,6 +113,7 @@ export class TransportesSource extends Source {
   readonly name = "Transportes";
   readonly baseUrl = "https://dados.gov.br/dados/api/publico/conjuntos-dados";
 
+  /** Fetch ANAC flight statistics data. */
   async anacVoos(params?: AnacVooParams): Promise<AnacVoo[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 
@@ -131,6 +132,7 @@ export class TransportesSource extends Source {
     });
   }
 
+  /** Fetch PRF highway accident records. */
   async prfAcidentes(params?: PrfAcidenteParams): Promise<PrfAcidente[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 
@@ -146,6 +148,7 @@ export class TransportesSource extends Source {
     });
   }
 
+  /** Fetch DENATRAN vehicle fleet statistics. */
   async denatranFrota(params?: DenatranFrotaParams): Promise<DenatranFrota[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 
@@ -164,6 +167,7 @@ export class TransportesSource extends Source {
     });
   }
 
+  /** Fetch DNIT federal highway data. */
   async dnit(params?: DnitParams): Promise<DnitRodovia[]> {
     const queryParams: Record<string, string | number | undefined> = {
       id: "dnit-rodovias",
@@ -184,6 +188,7 @@ export class TransportesSource extends Source {
     });
   }
 
+  /** Fetch ANTT highway concession data. */
   async antt(params?: AnttParams): Promise<AnttConcessao[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 

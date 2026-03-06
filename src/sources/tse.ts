@@ -194,42 +194,49 @@ export class TseSource extends Source {
     this.cache = config?.cache ?? getDefaultCache();
   }
 
+  /** Download and parse candidate registration data for a given election year. */
   async candidaturas(params: TseDownloadParams): Promise<Candidatura[]> {
     this.validateAno(params.ano);
     const url = tseZipUrl("consulta_cand", params.ano);
     return this.downloadAndParse<Candidatura>(url, `tse-cand-${params.ano}`, params);
   }
 
+  /** Download and parse declared assets of candidates for a given election year. */
   async bens(params: TseDownloadParams): Promise<BemCandidato[]> {
     this.validateAno(params.ano);
     const url = tseZipUrl("bem_candidato", params.ano);
     return this.downloadAndParse<BemCandidato>(url, `tse-bens-${params.ano}`, params);
   }
 
+  /** Download and parse election voting results by municipality and zone. */
   async resultados(params: TseDownloadParams): Promise<ResultadoVotacao[]> {
     this.validateAno(params.ano);
     const url = tseZipUrl("votacao_candidato_munzona", params.ano);
     return this.downloadAndParse<ResultadoVotacao>(url, `tse-result-${params.ano}`, params);
   }
 
+  /** Download and parse campaign finance accountability data. */
   async prestacaoContas(params: TseDownloadParams): Promise<PrestacaoConta[]> {
     this.validateAno(params.ano);
     const url = tseZipUrl("prestacao_contas", params.ano);
     return this.downloadAndParse<PrestacaoConta>(url, `tse-prestacao-${params.ano}`, params);
   }
 
+  /** Download and parse electorate profile data for a given year. */
   async eleitorado(params: TseDownloadParams): Promise<Eleitor[]> {
     this.validateAno(params.ano);
     const url = tseZipUrl("eleitorado", params.ano);
     return this.downloadAndParse<Eleitor>(url, `tse-eleitorado-${params.ano}`, params);
   }
 
+  /** Download and parse ballot box bulletins for a given election year. */
   async boletins(params: TseDownloadParams): Promise<BoletimUrna[]> {
     this.validateAno(params.ano);
     const url = tseZipUrl("boletim_urna", params.ano);
     return this.downloadAndParse<BoletimUrna>(url, `tse-boletim-${params.ano}`, params);
   }
 
+  /** Download and parse party membership records by party and state. */
   async filiados(params: { partido: string; estado: string }): Promise<Filiado[]> {
     if (!params.partido || !params.estado) {
       throw new BVValidationError("partido/estado", "must be provided", "tse");

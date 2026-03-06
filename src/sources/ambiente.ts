@@ -108,7 +108,7 @@ export interface UnidadeConservacao {
   uf: string;
   esfera: string;
   areaHa: string;
-  anoCreiacao: string;
+  anoCriacao: string;
   biomaIbge: string;
   [key: string]: string;
 }
@@ -152,6 +152,7 @@ export class AmbienteSource extends Source {
 
   // ── PRODES — Deforestation data ───────────────────────────────
 
+  /** Fetch PRODES annual deforestation data from INPE. */
   async prodes(params?: ProdesParams): Promise<ProdesItem[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 
@@ -169,6 +170,7 @@ export class AmbienteSource extends Source {
 
   // ── DETER — Real-time deforestation alerts ────────────────────
 
+  /** Fetch DETER real-time deforestation alerts from INPE. */
   async deter(params?: DeterParams): Promise<DeterAlerta[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 
@@ -189,6 +191,7 @@ export class AmbienteSource extends Source {
 
   // ── Focos de Calor — Fire hotspots ────────────────────────────
 
+  /** Fetch active fire hotspot data from INPE. */
   async focosCalor(params?: FocosCalorParams): Promise<FocoCalor[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 
@@ -209,6 +212,7 @@ export class AmbienteSource extends Source {
 
   // ── IBAMA — Environmental fines ───────────────────────────────
 
+  /** Fetch IBAMA environmental fines records. */
   async ibamaMultas(params?: IbamaMultasParams): Promise<IbamaMulta[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 
@@ -229,6 +233,7 @@ export class AmbienteSource extends Source {
 
   // ── CAR — Cadastro Ambiental Rural ──────────────────────────────
 
+  /** Fetch rural property registrations from the CAR system. */
   async car(params?: CarParams): Promise<CarImovel[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 
@@ -252,6 +257,7 @@ export class AmbienteSource extends Source {
 
   // ── Unidades de Conservação — Conservation Units (ICMBio) ──────
 
+  /** Fetch conservation unit data from ICMBio. */
   async unidadesConservacao(params?: UcParams): Promise<UnidadeConservacao[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 
@@ -272,6 +278,7 @@ export class AmbienteSource extends Source {
 
   // ── Recursos Hídricos — Water Resources (ANA) ─────────────────
 
+  /** Search water resources datasets from ANA. */
   async recursosHidricos(params?: RecursosHidricosParams): Promise<RecursoHidrico[]> {
     const queryParams: Record<string, string | number | undefined> = {};
 

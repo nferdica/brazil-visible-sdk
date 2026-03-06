@@ -76,6 +76,7 @@ export class BcbSource extends Source {
   readonly name = "Banco Central do Brasil";
   readonly baseUrl = "https://api.bcb.gov.br";
 
+  /** Fetch SGS time series data from the Central Bank. */
   async sgs(params: SgsParams): Promise<SgsSerie[]> {
     if (!Number.isInteger(params.serie) || params.serie <= 0) {
       throw new BVValidationError("serie", "must be a positive integer", "bcb");
@@ -101,6 +102,7 @@ export class BcbSource extends Source {
     }));
   }
 
+  /** Fetch market expectations for economic indicators from the Focus survey. */
   async expectativas(params: ExpectativasParams): Promise<ExpectativaMercado[]> {
     const queryParams: Record<string, string> = { $format: "json" };
 
@@ -127,6 +129,7 @@ export class BcbSource extends Source {
     return response.value;
   }
 
+  /** Fetch financial institution data from IF.data via OLINDA. */
   async ifdata(params: IfDataParams = {}): Promise<IfDataItem[]> {
     const queryParams: Record<string, string> = { $format: "json" };
 

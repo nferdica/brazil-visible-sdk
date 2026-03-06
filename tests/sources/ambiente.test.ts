@@ -275,7 +275,7 @@ describe("AmbienteSource", () => {
               uf: "PA",
               esfera: "Federal",
               areaHa: "1089439",
-              anoCreiacao: "1974",
+              anoCriacao: "1974",
               biomaIbge: "Amazonia",
             },
           ]);
