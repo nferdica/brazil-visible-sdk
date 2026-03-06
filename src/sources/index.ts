@@ -41,4 +41,71 @@ export type {
   ContratoItem,
   ServidoresParams,
   ServidorItem,
+  CeafParams,
+  CeafItem,
+  EmendasParams,
+  EmendaItem,
+  ViagensParams,
+  ViagemItem,
 } from "./cgu";
+export { TseSource } from "./tse";
+export type {
+  TseDownloadParams,
+  Candidatura,
+  BemCandidato,
+  Filiado,
+  ResultadoVotacao,
+} from "./tse";
+export { ReceitaSource } from "./receita";
+export type {
+  ReceitaDownloadParams,
+  Empresa,
+  Estabelecimento,
+  Socio,
+  SimplesNacional,
+} from "./receita";
+export { InepSource } from "./inep";
+export type {
+  InepDownloadParams,
+  EnemMicrodado,
+  CensoEscolarEscola,
+  CensoSuperiorIes,
+} from "./inep";
+export { TrabalhoSource } from "./trabalho";
+export type {
+  TrabalhoDownloadParams,
+  CagedItem,
+  RaisEstabelecimento,
+} from "./trabalho";
+export { MercadoSource } from "./mercado";
+export type {
+  CvmYearParams,
+  DfpItem,
+  ItrItem,
+  CiaAberta,
+  FundoInvestimento,
+} from "./mercado";
+export { PrevidenciaSource } from "./previdencia";
+export type { PrevidenciaDownloadParams, BeneficioConcedido, FundoPensao } from "./previdencia";
+export { ReguladorasSource } from "./reguladoras";
+export type { AnatelAcesso, AneelTarifa, AnpCombustivel, AnvisaMedicamento } from "./reguladoras";
+export { SegurancaSource } from "./seguranca";
+export type { OcorrenciaCriminal, IndicadorSeguranca } from "./seguranca";
+export { PortaisSource } from "./portais";
+export type { ConjuntoDados, Recurso, ExecucaoOrcamentaria } from "./portais";
+export { AmbienteSource } from "./ambiente";
+export type { ProdesItem, DeterAlerta, FocoCalor, IbamaMulta } from "./ambiente";
+export { TransportesSource } from "./transportes";
+export type { AnacVoo, PrfAcidente, DenatranFrota } from "./transportes";
+export { DiariosSource } from "./diarios";
+export type { DouItem, DoeItem } from "./diarios";
+export { GovernamentaisSource } from "./governamentais";
+export type { CadinItem, SiorgOrgao, SiapeServidor } from "./governamentais";
+export { OutrosSource } from "./outros";
+export type { AnsOperadora, AntaqPorto, AncineProjeto } from "./outros";
+export { CnjSource } from "./cnj";
+export type { DataJudProcesso, JusticaIndicador } from "./cnj";
+export { DataSusSource } from "./datasus";
+export type { CnesEstabelecimento, SimObito, SihInternacao } from "./datasus";
+export { GeoSource } from "./geo";
+export type { GeoMunicipio, WmsCapabilities, WmsLayer } from "./geo";

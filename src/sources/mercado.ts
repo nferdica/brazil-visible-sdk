@@ -1,0 +1,271 @@
+import { join } from "node:path";
+import { type FileCache, getDefaultCache } from "../cache";
+import { download, extractZip } from "../download";
+import { BVValidationError } from "../errors";
+import { parseCsvFile } from "../parsers";
+import { Source } from "./base";
+
+// ── Types ──────────────────────────────────────────────────────────
+
+export interface CvmYearParams {
+  ano: number;
+}
+
+export interface DfpItem {
+  CNPJ_CIA: string;
+  DT_REFER: string;
+  VERSAO: string;
+  DENOM_CIA: string;
+  CD_CVM: string;
+  GRUPO_DFP: string;
+  MOEDA: string;
+  ESCALA_MOEDA: string;
+  ORDEM_EXERC: string;
+  DT_INI_EXERC: string;
+  DT_FIM_EXERC: string;
+  CD_CONTA: string;
+  DS_CONTA: string;
+  VL_CONTA: string;
+  ST_CONTA_FIXA: string;
+  [key: string]: string;
+}
+
+export interface ItrItem {
+  CNPJ_CIA: string;
+  DT_REFER: string;
+  VERSAO: string;
+  DENOM_CIA: string;
+  CD_CVM: string;
+  GRUPO_DFP: string;
+  MOEDA: string;
+  ESCALA_MOEDA: string;
+  ORDEM_EXERC: string;
+  DT_INI_EXERC: string;
+  DT_FIM_EXERC: string;
+  CD_CONTA: string;
+  DS_CONTA: string;
+  VL_CONTA: string;
+  ST_CONTA_FIXA: string;
+  [key: string]: string;
+}
+
+export interface CiaAberta {
+  CNPJ_CIA: string;
+  DENOM_SOCIAL: string;
+  DENOM_COMERC: string;
+  DT_REG: string;
+  DT_CONST: string;
+  DT_CANCEL: string;
+  MOTIVO_CANCEL: string;
+  SIT: string;
+  DT_INI_SIT: string;
+  CD_CVM: string;
+  SETOR_ATIV: string;
+  TP_MERC: string;
+  CATEG_REG: string;
+  DT_INI_CATEG: string;
+  SIT_EMISSOR: string;
+  DT_INI_SIT_EMISSOR: string;
+  CONTROLE_ACIONARIO: string;
+  TP_ENDER: string;
+  LOGRADOURO: string;
+  COMPL: string;
+  BAIRRO: string;
+  MUN: string;
+  UF: string;
+  PAIS: string;
+  CEP: string;
+  DDD_TEL: string;
+  TEL: string;
+  DDD_FAX: string;
+  FAX: string;
+  EMAIL: string;
+  TP_RESP: string;
+  RESP: string;
+  DT_INI_RESP: string;
+  LOGRADOURO_RESP: string;
+  COMPL_RESP: string;
+  BAIRRO_RESP: string;
+  MUN_RESP: string;
+  UF_RESP: string;
+  PAIS_RESP: string;
+  CEP_RESP: string;
+  DDD_TEL_RESP: string;
+  TEL_RESP: string;
+  DDD_FAX_RESP: string;
+  FAX_RESP: string;
+  EMAIL_RESP: string;
+  [key: string]: string;
+}
+
+export interface FundoInvestimento {
+  CNPJ_FUNDO: string;
+  DENOM_SOCIAL: string;
+  DT_REG: string;
+  DT_CONST: string;
+  DT_CANCEL: string;
+  SIT: string;
+  DT_INI_SIT: string;
+  DT_INI_ATIV: string;
+  DT_INI_EXERC: string;
+  DT_FIM_EXERC: string;
+  CLASSE: string;
+  DT_INI_CLASSE: string;
+  RENTAB_FUNDO: string;
+  CONDOM: string;
+  FUNDO_COTAS: string;
+  FUNDO_EXCLUSIVO: string;
+  TRIB_LPRAZO: string;
+  INVEST_QUALIF: string;
+  TAXA_PERFM: string;
+  INF_TAXA_PERFM: string;
+  TAXA_ADM: string;
+  INF_TAXA_ADM: string;
+  VL_PATRIM_LIQ: string;
+  DT_PATRIM_LIQ: string;
+  DIRETOR: string;
+  CNPJ_ADMIN: string;
+  ADMIN: string;
+  PF_PJ_GESTOR: string;
+  CPF_CNPJ_GESTOR: string;
+  GESTOR: string;
+  CNPJ_AUDITOR: string;
+  AUDITOR: string;
+  [key: string]: string;
+}
+
+// ── URL Builders ──────────────────────────────────────────────────
+
+const CVM_BASE = "https://dados.cvm.gov.br/dados";
+
+function cvmDfpUrl(ano: number): string {
+  return `${CVM_BASE}/CIA_ABERTA/DOC/DFP/DADOS/dfp_cia_aberta_${ano}.zip`;
+}
+
+function cvmItrUrl(ano: number): string {
+  return `${CVM_BASE}/CIA_ABERTA/DOC/ITR/DADOS/itr_cia_aberta_${ano}.zip`;
+}
+
+function cvmCiaAbertaUrl(): string {
+  return `${CVM_BASE}/CIA_ABERTA/CAD/DADOS/cad_cia_aberta.csv`;
+}
+
+function cvmFundosUrl(): string {
+  return `${CVM_BASE}/FI/CAD/DADOS/cad_fi.csv`;
+}
+
+// ── Source ──────────────────────────────────────────────────────────
+
+export class MercadoSource extends Source {
+  readonly name = "CVM";
+  readonly baseUrl = "https://dados.cvm.gov.br";
+  private readonly cache: FileCache;
+
+  constructor(config?: {
+    client?: InstanceType<typeof import("../client").BVClient>;
+    cache?: FileCache;
+  }) {
+    super(config);
+    this.cache = config?.cache ?? getDefaultCache();
+  }
+
+  async dfp(params: CvmYearParams): Promise<DfpItem[]> {
+    this.validateAno(params.ano);
+    const url = cvmDfpUrl(params.ano);
+    const cacheKey = `cvm-dfp-${params.ano}`;
+    return this.downloadZipAndParse<DfpItem>(url, cacheKey);
+  }
+
+  async itr(params: CvmYearParams): Promise<ItrItem[]> {
+    this.validateAno(params.ano);
+    const url = cvmItrUrl(params.ano);
+    const cacheKey = `cvm-itr-${params.ano}`;
+    return this.downloadZipAndParse<ItrItem>(url, cacheKey);
+  }
+
+  async ciasAbertas(): Promise<CiaAberta[]> {
+    const cacheKey = "cvm-cias-abertas";
+    return this.downloadCsvAndParse<CiaAberta>(cvmCiaAbertaUrl(), cacheKey, "cad_cia_aberta.csv");
+  }
+
+  async fundos(): Promise<FundoInvestimento[]> {
+    const cacheKey = "cvm-fundos";
+    return this.downloadCsvAndParse<FundoInvestimento>(cvmFundosUrl(), cacheKey, "cad_fi.csv");
+  }
+
+  // ── Private Helpers ──────────────────────────────────────────
+
+  private async downloadZipAndParse<T extends Record<string, string>>(
+    url: string,
+    cacheKey: string,
+  ): Promise<T[]> {
+    const cached = await this.cache.get(cacheKey);
+    if (cached) {
+      return this.parseCvmCsvDir<T>(cached);
+    }
+
+    const zipPath = await download(url, {
+      destDir: join(this.cache.getCacheDir(), cacheKey),
+      filename: `${cacheKey}.zip`,
+    });
+
+    const extractDir = join(this.cache.getCacheDir(), cacheKey, "extracted");
+    await extractZip(zipPath, extractDir);
+    await this.cache.put(cacheKey, extractDir);
+
+    return this.parseCvmCsvDir<T>(extractDir);
+  }
+
+  private async downloadCsvAndParse<T extends Record<string, string>>(
+    url: string,
+    cacheKey: string,
+    filename: string,
+  ): Promise<T[]> {
+    const cached = await this.cache.get(cacheKey);
+    if (cached) {
+      return this.parseCvmCsvDir<T>(cached);
+    }
+
+    const destDir = join(this.cache.getCacheDir(), cacheKey, "extracted");
+    const csvPath = await download(url, {
+      destDir,
+      filename,
+    });
+
+    await this.cache.put(cacheKey, destDir);
+
+    return parseCsvFile<T>(csvPath, {
+      delimiter: ";",
+      encoding: "utf-8",
+    });
+  }
+
+  private async parseCvmCsvDir<T extends Record<string, string>>(dir: string): Promise<T[]> {
+    const { readdir } = await import("node:fs/promises");
+    const entries = await readdir(dir);
+
+    const csvFiles = entries.filter((f) => f.endsWith(".csv"));
+
+    const allRecords: T[] = [];
+
+    for (const csvFile of csvFiles) {
+      const records = await parseCsvFile<T>(join(dir, csvFile), {
+        delimiter: ";",
+        encoding: "utf-8",
+      });
+      allRecords.push(...records);
+    }
+
+    return allRecords;
+  }
+
+  private validateAno(ano: number): void {
+    if (!Number.isInteger(ano) || ano < 2010 || ano > new Date().getFullYear()) {
+      throw new BVValidationError(
+        "ano",
+        `must be an integer between 2010 and ${new Date().getFullYear()}`,
+        "cvm",
+      );
+    }
+  }
+}
