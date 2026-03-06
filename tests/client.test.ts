@@ -47,7 +47,7 @@ describe("BVClient", () => {
 
       const client = new BVClient();
       const result = await client.get<{ userAgent: string; accept: string }>(`${TEST_URL}/data`);
-      expect(result.userAgent).toContain("bracc-sdk");
+      expect(result.userAgent).toContain("brazilvisible-sdk");
       expect(result.accept).toContain("application/json");
     });
 

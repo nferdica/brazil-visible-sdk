@@ -1,4 +1,4 @@
-import { bcb, ibge, ipea, tesouro } from "@bracc/sdk";
+import { bcb, ibge, ipea, tesouro } from "@brazilvisible/sdk";
 
 async function main() {
   const selic = await bcb.sgs({

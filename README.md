@@ -1,4 +1,4 @@
-# br/acc SDK
+# Brazil Visible SDK
 
 SDK TypeScript unificado para acesso a **93+ fontes de dados publicos brasileiros**.
 
@@ -7,7 +7,7 @@ Uma interface programatica unica sobre APIs REST, downloads CSV, FTP e portais d
 ## Instalacao
 
 ```bash
-npm install @bracc/sdk
+npm install @brazilvisible/sdk
 ```
 
 Compativel com **Node.js >=18**, **Deno**, **Bun** e **browsers** (fontes REST).
@@ -15,7 +15,7 @@ Compativel com **Node.js >=18**, **Deno**, **Bun** e **browsers** (fontes REST).
 ## Uso rapido
 
 ```typescript
-import { bcb, ibge } from "@bracc/sdk";
+import { bcb, ibge } from "@brazilvisible/sdk";
 
 const selic = await bcb.sgs({ serie: 11, inicio: "2024-01-01", fim: "2024-12-31" });
 console.log(selic);
@@ -27,7 +27,7 @@ console.log(populacao);
 ### Com autenticacao (CGU)
 
 ```typescript
-import { cgu, configure } from "@bracc/sdk";
+import { cgu, configure } from "@brazilvisible/sdk";
 
 configure({ apiKeys: { cgu: "sua-chave-aqui" } });
 
@@ -38,7 +38,7 @@ const sancionadas = await cgu.ceis();
 ### Download de dados (TSE, Receita, etc.)
 
 ```typescript
-import { tse, receita } from "@bracc/sdk";
+import { tse, receita } from "@brazilvisible/sdk";
 
 const candidatos = await tse.candidaturas({ ano: 2022, estado: "SP" });
 console.log(`${candidatos.length} candidaturas em SP`);
@@ -49,7 +49,7 @@ const empresas = await receita.empresas({ chunk: 0 });
 ### Cruzamento de dados
 
 ```typescript
-import { cgu } from "@bracc/sdk";
+import { cgu } from "@brazilvisible/sdk";
 
 const sancionadas = await cgu.ceis();
 const contratos = await cgu.contratos({ ano: 2024 });
@@ -103,7 +103,7 @@ console.log(`${irregulares.length} contratos com empresas sancionadas`);
 ## Configuracao
 
 ```typescript
-import { configure } from "@bracc/sdk";
+import { configure } from "@brazilvisible/sdk";
 
 configure({
   timeout: 60000,
@@ -128,7 +128,7 @@ npm run typecheck
 
 ## Projeto irmao
 
-Este SDK e a camada programatica do [Brazilian Accelerationism](https://bracc.co) — catalogo de documentacao com 93+ fontes de dados publicos brasileiros.
+Este SDK e a camada programatica do [Brazil Visible](https://brazilvisible.org) — catalogo de documentacao com 93+ fontes de dados publicos brasileiros.
 
 ## Licenca
 

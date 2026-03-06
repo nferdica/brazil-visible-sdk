@@ -36,7 +36,7 @@ Add the IBGE (Instituto Brasileiro de Geografia e Estatística) source module wi
 ## Target Interface
 
 ```typescript
-import { ibge } from "@bracc/sdk";
+import { ibge } from "@brazilvisible/sdk";
 
 // === Localidades ===
 const estados = await ibge.estados();

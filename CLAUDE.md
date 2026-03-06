@@ -1,9 +1,9 @@
-# br/acc SDK — Claude Code Instructions
+# Brazil Visible SDK — Claude Code Instructions
 
 > Para visao completa do projeto, arquitetura e plano de implementacao, consulte [AGENTS.md](./AGENTS.md).
 
 ## Project Overview
-TypeScript SDK for unified access to 93+ Brazilian public data sources. Wraps REST APIs, CSV downloads, FTP archives and geospatial services behind a single `import { ibge, bcb } from '@bracc/sdk'` interface.
+TypeScript SDK for unified access to 93+ Brazilian public data sources. Wraps REST APIs, CSV downloads, FTP archives and geospatial services behind a single `import { ibge, bcb } from '@brazilvisible/sdk'` interface.
 
 ## Key Commands
 - `npm install` — install dependencies

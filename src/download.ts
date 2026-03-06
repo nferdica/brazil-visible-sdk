@@ -30,7 +30,7 @@ export async function download(url: string, options: DownloadOptions): Promise<s
   const destPath = join(options.destDir, filename);
 
   const headers: Record<string, string> = {
-    "User-Agent": "bracc-sdk/0.1 (https://bracc.co)",
+    "User-Agent": "brazilvisible-sdk/0.1 (https://brazilvisible.org)",
   };
 
   let startByte = 0;

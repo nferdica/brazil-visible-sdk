@@ -1,4 +1,4 @@
-import { cgu, configure } from "@bracc/sdk";
+import { cgu, configure } from "@brazilvisible/sdk";
 
 async function main() {
   const apiKey = process.env.BV_CGU_API_KEY;
