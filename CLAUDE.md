@@ -35,7 +35,7 @@ TypeScript SDK for unified access to 93+ Brazilian public data sources. Wraps RE
 - `src/parsers.ts` — format parsers (CSV, JSON, XML)
 - `src/config.ts` — global configuration (API keys, timeouts)
 - `tests/` — vitest test suite
-- `examples/` — usage examples
+- `README.md` — usage examples and documentation
 
 ## Conventions
 - Code language: English (function names, variables, JSDoc)
@@ -55,6 +55,5 @@ TypeScript SDK for unified access to 93+ Brazilian public data sources. Wraps RE
 2. Implement `Source` subclass with typed methods
 3. Re-export from `src/index.ts`
 4. Add tests in `tests/sources/<name>.test.ts`
-5. Add example in `examples/`
-6. Run: `npm run lint`, `npm run typecheck`, `npm test`
+5. Run: `npm run lint`, `npm run typecheck`, `npm test`
 7. Commit: `feat: add <source> module`
