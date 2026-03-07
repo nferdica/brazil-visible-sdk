@@ -136,6 +136,9 @@ export * from "./sources/cnj";
 export * from "./sources/datasus";
 export * from "./sources/geo";
 
+export { health, getHealthStatus } from "./health";
+export type { SourceHealth, HealthData, HealthOptions } from "./health";
+
 import { AmbienteSource } from "./sources/ambiente";
 import { BcbSource } from "./sources/bcb";
 import { CguSource } from "./sources/cgu";
