@@ -137,7 +137,7 @@ export * from "./sources/datasus";
 export * from "./sources/geo";
 
 export { health, getHealthStatus } from "./health";
-export type { SourceHealth, HealthData, HealthOptions } from "./health";
+export type { HealthData, HealthOptions, HealthResult, HealthStatus, SourceHealth } from "./health";
 
 import { AmbienteSource } from "./sources/ambiente";
 import { BcbSource } from "./sources/bcb";
