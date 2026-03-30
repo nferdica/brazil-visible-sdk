@@ -1,6 +1,6 @@
 {
   "name": "@brazilvisible/sdk",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "SDK TypeScript unificado para acesso a 93+ fontes de dados publicos brasileiros",
   "type": "module",
   "main": "./dist/index.cjs",
